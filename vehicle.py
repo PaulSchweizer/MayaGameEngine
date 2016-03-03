@@ -40,8 +40,13 @@ class Vehicle(gameengine.GameObject):
 
 
         ###### SAVED ATTRS
-        self.previous_acceleration = 0.0
+        self.previous_acceleration = pm.datatypes.Vector(0, 0, 0)
         self.previous_velocity = 0.0
+
+
+        ### YET ANOTHER NEW ATTEMPT
+        self.wheel_rotation_rate
+
     # end def __init__
 
     # def update(self, delta_time):
@@ -82,27 +87,6 @@ class Vehicle(gameengine.GameObject):
     #     print self.velocity_kmh(self.previous_velocity)
     # # end def update
 
-    def drive_torque(self):
-        """@todo documentation for drive_torque"""
-        return ((self.engine_torque(self.rpm())
-                 * self.throttle_position()
-                 * self.gear_ratios[self.gear]
-                 * self.differential_ratio
-                 * self.transmission_efficiency
-                 * self.forward_vector) / self.wheel_radius)
-    # end def drive_torque
-
-    # def rpm(self):
-    #     """@todo documentation for rpm"""
-    #     return 4400
-    #     wheel_rotation_rate = (self.angular_acceleration.length() * 1000 / 3600.0) / self.wheel_radius
-    #     rpm = (wheel_rotation_rate * self.gear_ratios[self.gear] * self.differential_ratio * 60) / (2 * math.pi)
-    #     if rpm < 6000:
-    #         return rpm
-    #     else:
-    #         return 6000
-    # # end def rpm
-
     def speed(self):
         """Speed is in km/h"""
         return self.velocity.length()
@@ -113,10 +97,10 @@ class Vehicle(gameengine.GameObject):
         return 1
     # end def throttle_position
 
-    def traction_torque(self):
-        """@todo documentation for traction_torque"""
-        return (self.air_resistance_force() + self.internal_resistance_force()) * self.wheel_radius
-    # end def traction_torque
+    # def traction_torque(self):
+    #     """@todo documentation for traction_torque"""
+    #     return (self.air_resistance_force() + self.internal_resistance_force()) * self.wheel_radius
+    # # end def traction_torque
 
 
     ######################################################################################################################
@@ -125,23 +109,8 @@ class Vehicle(gameengine.GameObject):
 
     def update(self, delta_time):
         """Update the vehicle position."""
-        print self.drive_force(), self.maximum_drive_force()
-        # print self.velocity_kmh(self.previous_velocity), self.rpm()
-
-
-        # Update the acceleration and velocity
-        self.previous_acceleration += delta_time * self.acceleration()
-        self.previous_velocity = self.velocity_ms()
-
-
+        self.previous_acceleration = self.acceleration()
     # end def update
-
-    def engine_force(self):
-        """
-        Torque: Force*distance
-        """
-        pass
-    # end def engine_force
 
     def engine_torque(self, rpm=1000):
         """The maximum engine torque at the given rpm."""
@@ -178,7 +147,6 @@ class Vehicle(gameengine.GameObject):
         y0 = torque_curve[start_point]
         y1 = torque_curve[end_point]
 
-
         return y0 + (y1 - y0) * ((rpm - x0) / float(x1 - x0))
     # end def engine_torque
 
@@ -193,6 +161,7 @@ class Vehicle(gameengine.GameObject):
                        * self.differential_ratio
                        * self.transmission_efficiency
                        / self.wheel_radius)
+        return drive_force
         max_force = self.maximum_drive_force()
         if drive_force < max_force:
             return drive_force
@@ -203,7 +172,7 @@ class Vehicle(gameengine.GameObject):
 
     def rpm(self):
         """@todo documentation for rpm"""
-        wheel_rotation_rate = (self.previous_acceleration * 1000 / 3600.0) / self.wheel_radius
+        wheel_rotation_rate = (self.previous_acceleration.length() * 1000 / 3600.0) / self.wheel_radius
         rpm = (wheel_rotation_rate * self.gear_ratios[self.gear] * self.differential_ratio * 60) / (2 * math.pi)
         if rpm < 10:
             return 10
@@ -221,7 +190,7 @@ class Vehicle(gameengine.GameObject):
 
     def acceleration(self):
         """@return Acceleration in m/s**2"""
-        return self.drive_force() / 1500.0
+        return (self.drive_force() + self.air_resistance_force() + self.internal_resistance_force()) / self.mass
     # end def acceleration
 
     def air_resistance_force(self):
@@ -231,7 +200,7 @@ class Vehicle(gameengine.GameObject):
         """
         coefficient_of_friction = 0.3
         air_density = 1.29
-        return -(0.5 * coefficient_of_friction * self.windshield_area * air_density * self.speed()**2) * self.forward_vector
+        return -(0.5 * coefficient_of_friction * self.windshield_area * air_density * self.velocity_ms()**2) * self.forward_vector
     # end def air_resistance_force
 
     def internal_resistance_force(self):
@@ -263,13 +232,36 @@ class Vehicle(gameengine.GameObject):
         """@todo documentation for velocity_kmh"""
         return 0.001 * velocity_in_ms / 0.0002777777777777778
     # end def velocity_kmh
+
+    def slip_ratio(self):
+        """@todo documentation for slip_ratio"""
+        d = 0.3
+        d0 = 0.2
+        D = 0.4
+        B = 12
+        E = 0.25
+        Rc = self.wheel_radius - d0 * (D * math.atan(B * d / d0) + E * d / d0)
+        omega = self.velocity_ms() / (2 * math.pi * Rc)
+        return (omega - self.velocity_ms()) / self.velocity_ms()
+    # end def slip_ratio
+
+    def traction_force(self):
+        """@todo documentation for traction_force"""
+        self.weight_transfer()
+    # end def traction_force
+
+    def traction_torque(self):
+        """@todo documentation for traction_torque"""
+        # return self.traction_force() * self.wheel_radius
+    # end def traction_torque
+
 # end class Vehicle
 
 
-v = Vehicle('car')
-print '####################'
-for i in range(10):
-    v.update(1)
+# v = Vehicle('car')
+# print '####################'
+# for i in range(10):
+#     v.update(0.01)
 
 
 
@@ -286,39 +278,190 @@ for i in range(10):
 
 
 
+def rpm(wheel_rotation_rate, gear_ratio, differential_ratio):
+    """Rpm of the engine."""
+    return (wheel_rotation_rate * gear_ratio * differential_ratio * 60.0) / (2.0 * math.pi)
+# end def rpm
 
 
+def engine_torque(rpm=1000):
+    """The maximum engine torque at the given rpm."""
+    torque_curve = OrderedDict()
+    torque_curve[1000] = 393
+    torque_curve[2500] = 448
+    torque_curve[4400] = 475
+    torque_curve[5000] = 488
+    torque_curve[6000] = 386
+
+    diff = rpm - torque_curve.keys()[0]
+    start_point = torque_curve.keys()[0]
+    end_point = torque_curve.keys()[-1]
+
+    if rpm >= end_point:
+        return torque_curve[end_point]
+    if rpm <= start_point:
+        return torque_curve[start_point]
+
+    for point, value in torque_curve.items():
+        if abs(point - rpm) <= diff:
+            diff = abs(point - rpm)
+            start_point = point
+        # end if
+    # end for
+
+    if rpm > start_point:
+        end_point = torque_curve.keys()[torque_curve.keys().index(start_point) + 1]
+    else:
+        end_point = torque_curve.keys()[torque_curve.keys().index(start_point) - 1]
+    x0 = start_point
+    x1 = end_point
+
+    y0 = torque_curve[start_point]
+    y1 = torque_curve[end_point]
+
+    return y0 + (y1 - y0) * ((rpm - x0) / float(x1 - x0))
+# end def engine_torque
 
 
+def drive_torque(forward_vector, engine_torque, gear_ratio, differential_ratio, transmission_efficiency, throttle_position):
+    """The force that drives the car forward, produced by the engine.
+
+    @return A torque
+    """
+    return forward_vector * (engine_torque
+            * gear_ratio
+            * differential_ratio
+            * transmission_efficiency) * throttle_position
+# end def drive_torque
 
 
+def drive_force(forward_vector, drive_torque):
+    """The force that drives the car forward, produced by the engine.
+
+    @return A force vector in Newton
+    """
+    return forward_vector * drive_torque
+# end def drive_force
 
 
+def air_resistance_constant(windshield_area):
+    """The air resistance.
+
+    @return A force vector in Newton
+    """
+    coefficient_of_friction = 0.3
+    air_density = 1.29
+    return 0.5 * coefficient_of_friction * windshield_area * air_density
+# end def air_resistance_constant
 
 
+def air_resistance_force(forward_vector, air_resistance_constant, velocity):
+    """The air resistance.
+
+    @return A force vector in Newton
+    """
+    return -(air_resistance_constant * velocity * velocity.length())
+# end def air_resistance_force
 
 
+def internal_resistance_force(air_resistance_constant, velocity):
+    """The internal resistance of the wheels.
+
+    @return A force vector in Newton
+    """
+    return -(30 * air_resistance_constant * velocity)
+# end def internal_resistance_force
 
 
+def traction_force(drive_force, air_resistance_force, internal_resistance_force):
+    """@todo documentation for traction_force"""
+    return drive_force + air_resistance_force + internal_resistance_force
+# end def traction_force
 
 
+def speed_in_ms(rpm, gear_ratio, differential_ratio, wheel_radius):
+    """@todo documentation for ms"""
+    return rpm / (gear_ratio * differential_ratio * 60.0) * 2 * math.pi * wheel_radius
+# end def speed_in_ms
 
 
+def total_torque(drive_force, traction_force, wheel_radius):
+    """@todo documentation for total_torque"""
+    drive_torque = drive_force
+    traction_torque = traction_force
+    return drive_torque + traction_torque # + brake_torque
+# end def total_torque
+
+def slip_ratio(angular_velocity, wheel_radius, velocity_ms):
+    """@todo documentation for slip_ratio"""
+    d = 0.3
+    d0 = 0.2
+    D = 0.4
+    B = 12
+    E = 0.25
+    Rc = wheel_radius - d0 * (D * math.atan(B * d / d0) + E * d / d0)
+
+    return -((velocity_ms - Rc*angular_velocity) / velocity_ms)
 
 
+    omega = velocity_ms / (2 * math.pi * Rc)
+    return (omega - velocity_ms) / velocity_ms
+# end def slip_ratio
 
 
+def weight_transfer(length, mass, cog, acceleration):
+    """@return The weight forces for the front and rear axle in Newton."""
+    c = length / 2.0
+    b = length / 2.0
+    weight_front = (c/length) * mass * 9.81 - (cog/length) * mass * acceleration
+    weight_rear = (b/length) * mass * 9.81 + (cog/length) * mass * acceleration
+    return weight_front, weight_rear
+# end def weight_transfer
 
 
+#### TESTS ##############################################################
+forward_vector = pm.datatypes.Vector(0, 0, 1)
+length = 2.5
+cog = 1.00
+mass = 1500.0
+wheel_mass = 75.0
+wheel_radius = 0.33
+windshield_area = 2.2
+throttle_position = 1
+wheel_radius = 0.33
+gear_ratio = [2.90, 2.66, 1.78, 1.30, 1.0, 0.74, 0.5][1]
+differential_ratio = 3.42
+transmission_efficiency = 0.7
+kmh = 20.0
+ms = kmh * 0.0002777777777777778 / 0.001
+rear_wheel_angular_velocity = 0
+wheel_rotation_rate = ms / wheel_radius
+
+acceleration = pm.datatypes.Vector(0, 0, 0)
+velocity = pm.datatypes.Vector(0, 0, 0)
 
 
+for i in range(100):
+    ms = velocity.length() * (0.0002777777777777778 / 0.001)
+
+    wheel_rotation_rate = ms / wheel_radius
+
+    _rpm = rpm(wheel_rotation_rate, gear_ratio, differential_ratio)
+    _engine_torque = engine_torque(_rpm)
+    _drive_torque = drive_torque(forward_vector, _engine_torque, gear_ratio, differential_ratio, transmission_efficiency, throttle_position)
+    weight_front, weight_rear = weight_transfer(length, mass, cog, ((mass / 2) * 9.81) / mass)
 
 
+    _air_resistance_force = air_resistance_force(forward_vector, air_resistance_constant(windshield_area), velocity)
+    _internal_resistance_force = internal_resistance_force(air_resistance_constant(windshield_area), velocity)
+    _traction_force = traction_force(_drive_torque, _air_resistance_force, _internal_resistance_force)
+    # _total_torque = total_torque(_drive_torque, _air_resistance_force + _internal_resistance_force, wheel_radius)
 
+    # TEST
+    acceleration = _traction_force / (weight_rear / 9.81)
+    velocity = velocity + 1 * acceleration
 
-
-
-
+    print velocity.length()
 
 
 
