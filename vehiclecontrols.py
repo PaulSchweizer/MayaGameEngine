@@ -2,10 +2,7 @@ import maya.cmds as cmds
 import pymel.core as pm
 import time
 
-from rnkQtImportWrapper import loadUi, QtCore, QtGui
-
-from rnkRig.core.qt import utils
-reload(utils)
+from PySide import QtCore, QtGui
 
 
 class Player(object):
@@ -178,17 +175,17 @@ class VehicleControls(QtGui.QWidget):
     def __init__(self):
         """Initialize the class."""
         super(VehicleControls, self).__init__()
-        loadUi(utils.get_ui_file_path(__file__, 'VehicleControls'), self)
-        utils.set_stylesheet(self)
+        # loadUi(utils.get_ui_file_path(__file__, 'VehicleControls'), self)
 
-        self.targets = [pm.datatypes.Point(pm.PyNode('target1').getTranslation()),
-                        pm.datatypes.Point(pm.PyNode('target2').getTranslation()),
-                        pm.datatypes.Point(pm.PyNode('target3').getTranslation()),
-                        pm.datatypes.Point(pm.PyNode('target4').getTranslation()),
-                        pm.datatypes.Point(pm.PyNode('target5').getTranslation()),
-                        pm.datatypes.Point(pm.PyNode('target6').getTranslation())]
+        self.start_btn = JoystickButton(self)
+        self.setLayout(QtGui.QHBoxLayout())
+        self.layout().addWidget(self.start_btn)
 
-        self.players = [Player('Paul'), Player('Loic', 87, 83, 65, 68)]
+        self.targets = [pm.datatypes.Point(pm.PyNode('pSphere1').getTranslation()),
+                        pm.datatypes.Point(pm.PyNode('pSphere2').getTranslation()),
+                        pm.datatypes.Point(pm.PyNode('pSphere3').getTranslation())]
+
+        self.players = [Player('Paul'), Player('Irena', 87, 83, 65, 68)]
         self.vehicles = [Vehicle(self.players[0], 'pCube1'), Vehicle(self.players[1], 'pCube2')]
 
         self.target_fps = 60
@@ -268,7 +265,7 @@ class VehicleControls(QtGui.QWidget):
                 vehicle.update(diff_time)
 
                 for target in self.targets:
-                    if target.distanceTo(vehicle.position) < 10:
+                    if target.distanceTo(vehicle.position) < 40:
                         if target not in vehicle.player.targets_reached:
                             vehicle.player.targets_reached.append(target)
                 # end for
@@ -295,6 +292,7 @@ class JoystickButton(QtGui.QPushButton):
         super(JoystickButton, self).__init__(parent=parent)
         self.mouse_pressed = False
         self.running = False
+        self.setText('START')
     # end def __init__
 
     def mousePressEvent(self, event):
@@ -312,3 +310,9 @@ class JoystickButton(QtGui.QPushButton):
         # end while
     # end def mouseReleaseEvent
 # end class JoystickButton
+
+
+v = VehicleControls()
+v.show()
+
+

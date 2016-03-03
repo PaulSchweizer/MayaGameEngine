@@ -2,7 +2,7 @@ import math
 from collections import OrderedDict
 import pymel.core as pm
 
-from rnkQtImportWrapper import QtCore
+from PySide import QtCore
 
 from rnkRig.animation.mayagame import gameengine
 reload(gameengine)
