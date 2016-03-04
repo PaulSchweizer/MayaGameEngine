@@ -2,7 +2,7 @@ import math
 from collections import OrderedDict
 import pymel.core as pm
 
-from PySide import QtCore
+from rnkQtImportWrapper import QtCore
 
 from rnkRig.animation.mayagame import gameengine
 reload(gameengine)
@@ -385,27 +385,25 @@ def speed_in_ms(rpm, gear_ratio, differential_ratio, wheel_radius):
 # end def speed_in_ms
 
 
-def total_torque(drive_force, traction_force, wheel_radius):
-    """@todo documentation for total_torque"""
-    drive_torque = drive_force
-    traction_torque = traction_force
-    return drive_torque + traction_torque # + brake_torque
-# end def total_torque
+# def total_torque(drive_force, traction_force, wheel_radius):
+#     """@todo documentation for total_torque"""
+#     drive_torque = drive_force
+#     traction_torque = traction_force
+#     return drive_torque + traction_torque # + brake_torque
+# # end def total_torque
+
 
 def slip_ratio(angular_velocity, wheel_radius, velocity_ms):
     """@todo documentation for slip_ratio"""
-    d = 0.3
-    d0 = 0.2
-    D = 0.4
-    B = 12
-    E = 0.25
-    Rc = wheel_radius - d0 * (D * math.atan(B * d / d0) + E * d / d0)
-
-    return -((velocity_ms - Rc*angular_velocity) / velocity_ms)
-
-
-    omega = velocity_ms / (2 * math.pi * Rc)
-    return (omega - velocity_ms) / velocity_ms
+    # d = 0.3
+    # d0 = 0.2
+    # D = 0.4
+    # B = 12
+    # E = 0.25
+    # Rc = wheel_radius - d0 * (D * math.atan(B * d / d0) + E * d / d0)
+    if velocity_ms == 0:
+        return -1.0
+    return ((angular_velocity * wheel_radius) - velocity_ms) / velocity_ms
 # end def slip_ratio
 
 
@@ -428,40 +426,143 @@ wheel_mass = 75.0
 wheel_radius = 0.33
 windshield_area = 2.2
 throttle_position = 1
-wheel_radius = 0.33
 gear_ratio = [2.90, 2.66, 1.78, 1.30, 1.0, 0.74, 0.5][1]
 differential_ratio = 3.42
 transmission_efficiency = 0.7
-kmh = 20.0
-ms = kmh * 0.0002777777777777778 / 0.001
-rear_wheel_angular_velocity = 0
-wheel_rotation_rate = ms / wheel_radius
 
 acceleration = pm.datatypes.Vector(0, 0, 0)
 velocity = pm.datatypes.Vector(0, 0, 0)
+rear_wheel_angular_velocity = pm.datatypes.Vector(0, 0, 0)
+
+_rpm = 1000
 
 
+print '######################'
 for i in range(100):
-    ms = velocity.length() * (0.0002777777777777778 / 0.001)
-
-    wheel_rotation_rate = ms / wheel_radius
-
-    _rpm = rpm(wheel_rotation_rate, gear_ratio, differential_ratio)
-    _engine_torque = engine_torque(_rpm)
-    _drive_torque = drive_torque(forward_vector, _engine_torque, gear_ratio, differential_ratio, transmission_efficiency, throttle_position)
-    weight_front, weight_rear = weight_transfer(length, mass, cog, ((mass / 2) * 9.81) / mass)
-
+    ms = velocity * (0.0002777777777777778 / 0.001)
+    _drive_torque = drive_torque(forward_vector, engine_torque(_rpm), gear_ratio, differential_ratio, transmission_efficiency, throttle_position)
+    weight_front, weight_rear = weight_transfer(length, mass, cog, acceleration.length())
 
     _air_resistance_force = air_resistance_force(forward_vector, air_resistance_constant(windshield_area), velocity)
     _internal_resistance_force = internal_resistance_force(air_resistance_constant(windshield_area), velocity)
-    _traction_force = traction_force(_drive_torque, _air_resistance_force, _internal_resistance_force)
-    # _total_torque = total_torque(_drive_torque, _air_resistance_force + _internal_resistance_force, wheel_radius)
+    _traction_force = traction_force(_drive_torque / wheel_radius, _air_resistance_force, _internal_resistance_force)
 
-    # TEST
-    acceleration = _traction_force / (weight_rear / 9.81)
+    # Acceleration and Velocity Update
+    acceleration = _traction_force / weight_rear
     velocity = velocity + 1 * acceleration
 
-    print velocity.length()
+
+    # Get the wheel angular rotation from the rpm
+    angular_wheel_rotation = ((_rpm * 2 * math.pi) / (gear_ratio * differential_ratio * 60.0))
+
+    # Get the slip ratio
+    _slip_ratio = slip_ratio(angular_wheel_rotation, wheel_radius, ms.length())
+
+    # _wheel_traction_torque = pm.datatypes.Vector(0, 0, 1000) * (_slip_ratio * wheel_radius * weight_rear / 9.81 / 2)
+    # if _wheel_traction_torque.length() > 6000:
+    #     _wheel_traction_torque = pm.datatypes.Vector(0, 0, 6000)
+    # total_torque = _drive_torque * wheel_radius + _wheel_traction_torque
+    # angular_acceleration = total_torque / ((wheel_mass * wheel_radius**2) / 9.81)
+    # rear_wheel_angular_velocity = rear_wheel_angular_velocity + 1 * angular_acceleration
+
+    print velocity
+
+
+    # Other stuff
+    wheel_rotation_rate = ms.length()
+    _rpm = rpm(wheel_rotation_rate, gear_ratio, differential_ratio)
+
+
+    # # Angular speed of the wheels
+    # angular_acceleration = (_traction_force) / ((wheel_mass * wheel_radius**2) / 9.81),
+    # rear_wheel_angular_velocity = rear_wheel_angular_velocity + 1 * angular_acceleration
+
+    # angular_velocity = (rear_wheel_angular_velocity / (0.0002777777777777778 / 0.001)) / wheel_radius # ms.length() / wheel_radius
+
+    # print slip_ratio(angular_velocity.length(), wheel_radius, ms.length()), angular_velocity, ms.length()
+
+
+    # if ms.length() > 0:
+    #     longitude_force = 0.001 * slip_ratio(rear_wheel_angular_velocity, wheel_radius, ms)
+    #     # angular_acceleration = (_traction_force * wheel_radius * 2) / (wheel_mass * wheel_radius**2)
+    #     angular_acceleration = (_drive_torque + longitude_force * wheel_radius) / (wheel_mass * wheel_radius**2)
+    #     rear_wheel_angular_velocity = rear_wheel_angular_velocity + 1 * angular_acceleration
+    #     print rear_wheel_angular_velocity
+
+
+
+
+
+# print drive_torque(forward_vector, engine_torque(4400), 2.66, differential_ratio, transmission_efficiency, throttle_position)
+
+# print speed_in_ms(4400, 2.66, differential_ratio, wheel_radius)
+
+
+
+
+def slip_ratio_test(angular_velocity, wheel_radius, velocity_ms):
+    """@todo documentation for slip_ratio_test"""
+    # d = 0.3
+    # d0 = 0.2
+    # D = 0.4
+    # B = 12
+    # E = 0.25
+    # Rc = wheel_radius - d0 * (D * math.atan(B * d / d0) + E * d / d0)
+    return ((angular_velocity * wheel_radius) - velocity_ms) / velocity_ms
+# end def slip_ratio_test
+
+
+def traction_force():
+    """@todo documentation for traction_force"""
+    pass
+# end def traction_force
+
+_slip_ratio = slip_ratio_test(70.3100145555, wheel_radius, 23)
+
+
+# print (- (forward_vector * 1000 * _slip_ratio * wheel_radius) + pm.datatypes.Vector(0.0, 0.0, 2575.49781284)) / (wheel_mass * wheel_radius**2)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
