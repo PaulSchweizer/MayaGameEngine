@@ -19,7 +19,7 @@ coefficient_of_friction = 0.3
 air_density = 1.29
 air_resistance_constant = 0.5 * coefficient_of_friction * windshield_area * air_density
 traction_constant = 1000.0
-wheel_inertia = wheel_mass * wheel_radius**2 * 2
+wheel_inertia = wheel_mass * wheel_radius**2 * 3
 
 # User input
 throttle_position = 1
@@ -110,7 +110,13 @@ def rpm(wheel_rotation_rate):
 
     wheel_rotation_rate in rad/s
     """
-    return (wheel_rotation_rate * gear_ratio * differential_ratio * 60.0) / (2.0 * math.pi)
+    rpm = (wheel_rotation_rate * gear_ratio * differential_ratio * 60.0) / (2.0 * math.pi)
+    if rpm > 6600:
+        return 6600
+    elif rpm < 0:
+        return 0
+    else:
+        return rpm
 # end def rpm
 
 
@@ -120,32 +126,41 @@ def from_ms_to_rads(ms):
 # end def from_ms_to_rads
 
 
-def drive_force(engine_torque, throttle_position=1):
+def drive_force(engine_torque):
     """The force that drives the car forward, produced by the engine.
 
     @return A torque
     """
-    return engine_torque * gear_ratio * differential_ratio * transmission_efficiency * throttle_position / wheel_radius
+    return (engine_torque * gear_ratio * differential_ratio * transmission_efficiency * throttle_position) / wheel_radius
 # end def drive_force
 
 
-def slip_ratio(angular_velocity, speed):
+def slip_ratio(angular_velocity, velocity):
     """The slip ratio.
 
     angular_velocity in rad/s
     wheel_radius in m
     speed in ms/s
     """
-    if speed == 0:
-        return 0.0
+    if velocity == 0:
+        return -100
     # end if
-    return ((angular_velocity * wheel_radius) - speed) / speed
+    slip_ratio = (((angular_velocity * wheel_radius) / velocity) - 1) * 100
+    if slip_ratio > 100:
+        return 100
+    elif slip_ratio < -100:
+        return -100
+    else:
+        return slip_ratio
+    # end if
 # end def slip_ratio
 
 
 def wheel_traction_force(slip_ratio):
     if slip_ratio > 6:
         return traction_constant * 6
+    if slip_ratio < -6:
+        return traction_constant * -6
     return traction_constant * slip_ratio
 # end def wheel_traction_force
 
@@ -157,7 +172,7 @@ def traction_torque(wheel_traction_force):
 
 def rpm_to_wheel_velocity(rpm):
     """"""
-    return rpm * (2.0 * math.pi) / (gear_ratio * differential_ratio * 60)
+    return rpm / ((gear_ratio * differential_ratio * 60) / (2.0 * math.pi))
 # end def rpm_to_wheel_velocity
 
 
@@ -167,39 +182,67 @@ def traction_force(drive_force, air_resistance_force, internal_resistance_force)
 # end def traction_force
 
 
-print '############'
-_rpm = 1000
-velocity = 0
-angular_velocity = rpm_to_wheel_velocity(_rpm)
-angular_velocity_incr = 0
-ms = velocity * (0.0002777777777777778 / 0.001)
-acceleration = 0
-for i in range(100):
-    angular_velocity = rpm_to_wheel_velocity(_rpm)
-    slip = slip_ratio(angular_velocity, ms)
-    _wheel_traction_force = wheel_traction_force(slip)
+print '\n\n############'
+# _rpm = 1000
+# velocity = 0
+# angular_velocity = rpm_to_wheel_velocity(_rpm)
+# angular_velocity_incr = 0
+# acceleration = 0
+# for i in range(100):
+#     # angular_velocity = rpm_to_wheel_velocity(_rpm)
+#     slip = slip_ratio(angular_velocity_incr, velocity * (0.0002777777777777778 / 0.001))
+#     _wheel_traction_force = wheel_traction_force(slip)
 
+#     _air_resistance_force = air_resistance_force(velocity)
+#     _internal_resistance_force = internal_resistance_force(velocity)
+#     _drive_force = drive_force(engine_torque(_rpm))
+#     _traction_force = traction_force(_drive_force, _air_resistance_force, _internal_resistance_force)
+
+#     weight_front, weight_rear = weight_transfer(acceleration)
+#     if weight_rear < _traction_force:
+#         _traction_force = weight_rear
+#     # end if
+#     acceleration = _traction_force / mass
+#     velocity = velocity + 1 * acceleration
+
+
+#     _total_torque = (_drive_force * wheel_radius) - 2 * traction_torque(_wheel_traction_force)
+
+#     angular_acceleration = _total_torque / (wheel_inertia * 9.81)
+#     angular_velocity_incr = angular_velocity_incr + 1 * angular_acceleration
+
+#     _rpm = rpm(angular_velocity_incr)
+
+
+###############################################################################
+###############################################################################
+###############################################################################
+
+
+gear_ratio = 2.66
+velocity = 0
+_rpm = 1000
+velocity_rear = rpm_to_wheel_velocity(_rpm)
+for i in range(10):
+    # Calculate values
+    _slip_ratio = slip_ratio(velocity_rear, velocity * (0.0002777777777777778 / 0.001))
+    _drive_force = drive_force(engine_torque(_rpm))
     _air_resistance_force = air_resistance_force(velocity)
     _internal_resistance_force = internal_resistance_force(velocity)
-    _drive_force = drive_force(engine_torque(_rpm))
-    _traction_force = traction_force(_drive_force, _air_resistance_force, _internal_resistance_force)
 
-    weight_front, weight_rear = weight_transfer(acceleration)
-    if weight_rear < _traction_force:
-        _traction_force = weight_rear
-    # end if
+    # Update the velocity of the car
+    _traction_force = traction_force(_drive_force, _air_resistance_force, _internal_resistance_force)
     acceleration = _traction_force / mass
     velocity = velocity + 1 * acceleration
 
-    ms = velocity * (0.0002777777777777778 / 0.001)
-    wheel_rotation_rate = ms
-    _rpm = rpm(ms)
-
-    _total_torque = _traction_force * wheel_radius + 2*traction_torque(_wheel_traction_force)
-
+    # Update the rear velocity
+    _wheel_traction_force = wheel_traction_force(_slip_ratio)
+    _total_torque = (_drive_force * wheel_radius) - 2 * traction_torque(_wheel_traction_force)
     angular_acceleration = _total_torque / wheel_inertia
-    angular_velocity_incr += angular_acceleration
+    velocity_rear += 1 * angular_acceleration
 
+    # Update the rpm
+    _rpm = rpm(velocity_rear)
 
+    print _slip_ratio
 
-    print angular_velocity_incr, angular_velocity
