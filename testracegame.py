@@ -1,6 +1,5 @@
 import math
 from collections import OrderedDict
-import pymel.core as pm
 
 
 # Car Attributes
@@ -19,17 +18,18 @@ coefficient_of_friction = 0.3
 air_density = 1.29
 air_resistance_constant = 0.5 * coefficient_of_friction * windshield_area * air_density
 traction_constant = 1000.0
-wheel_inertia = wheel_mass * wheel_radius**2 * 3
+wheel_inertia = wheel_mass * wheel_radius**2
+adhesion_coefficient = 0.7
 
 # User input
 throttle_position = 1
 brake_position = 0
 
 # Dynamic Attributes
-forward_vector = pm.datatypes.Vector(0, 0, 1)
-acceleration = pm.datatypes.Vector(0, 0, 0)
-velocity = pm.datatypes.Vector(0, 0, 0)
-rear_wheel_angular_velocity = pm.datatypes.Vector(0, 0, 0)
+# forward_vector = pm.datatypes.Vector(0, 0, 1)
+# acceleration = pm.datatypes.Vector(0, 0, 0)
+# velocity = pm.datatypes.Vector(0, 0, 0)
+# rear_wheel_angular_velocity = pm.datatypes.Vector(0, 0, 0)
 
 
 def air_resistance_force(velocity):
@@ -75,9 +75,9 @@ def engine_torque(rpm=1000):
     torque_curve[5000] = 488
     torque_curve[6000] = 386
 
-    diff = rpm - torque_curve.keys()[0]
-    start_point = torque_curve.keys()[0]
-    end_point = torque_curve.keys()[-1]
+    diff = rpm - list(torque_curve)[0]
+    start_point = list(torque_curve)[0]
+    end_point = list(torque_curve)[-1]
 
     if rpm >= end_point:
         return torque_curve[end_point]
@@ -92,9 +92,9 @@ def engine_torque(rpm=1000):
     # end for
 
     if rpm > start_point:
-        end_point = torque_curve.keys()[torque_curve.keys().index(start_point) + 1]
+        end_point = list(torque_curve)[list(torque_curve).index(start_point) + 1]
     else:
-        end_point = torque_curve.keys()[torque_curve.keys().index(start_point) - 1]
+        end_point = list(torque_curve)[list(torque_curve).index(start_point) - 1]
     x0 = start_point
     x1 = end_point
 
@@ -143,16 +143,21 @@ def slip_ratio(angular_velocity, velocity):
     speed in ms/s
     """
     if velocity == 0:
-        return -100
-    # end if
-    slip_ratio = (((angular_velocity * wheel_radius) / velocity) - 1) * 100
-    if slip_ratio > 100:
-        return 100
-    elif slip_ratio < -100:
-        return -100
-    else:
-        return slip_ratio
-    # end if
+        return 100.0
+    return (((angular_velocity * wheel_radius) - velocity) / velocity) * 100
+
+
+    # if velocity == 0:
+    #     return -100
+    # # end if
+    # slip_ratio = (((angular_velocity * wheel_radius) / velocity) - 1) * 100
+    # if slip_ratio > 100:
+    #     return 100
+    # elif slip_ratio < -100:
+    #     return -100
+    # else:
+    #     return slip_ratio
+    # # end if
 # end def slip_ratio
 
 
@@ -182,7 +187,7 @@ def traction_force(drive_force, air_resistance_force, internal_resistance_force)
 # end def traction_force
 
 
-print '\n\n############'
+print('\n############')
 # _rpm = 1000
 # velocity = 0
 # angular_velocity = rpm_to_wheel_velocity(_rpm)
@@ -219,11 +224,11 @@ print '\n\n############'
 ###############################################################################
 
 
-gear_ratio = 2.66
+gear_ratio = 1
 velocity = 0
 _rpm = 1000
 velocity_rear = rpm_to_wheel_velocity(_rpm)
-for i in range(10):
+for i in range(1):
     # Calculate values
     _slip_ratio = slip_ratio(velocity_rear, velocity * (0.0002777777777777778 / 0.001))
     _drive_force = drive_force(engine_torque(_rpm))
@@ -239,10 +244,29 @@ for i in range(10):
     _wheel_traction_force = wheel_traction_force(_slip_ratio)
     _total_torque = (_drive_force * wheel_radius) - 2 * traction_torque(_wheel_traction_force)
     angular_acceleration = _total_torque / wheel_inertia
+    angular_acceleration = acceleration / wheel_inertia
     velocity_rear += 1 * angular_acceleration
 
     # Update the rpm
     _rpm = rpm(velocity_rear)
 
-    print _slip_ratio
+###############################################################################
+
+_rpm = 1000
+kmh = rpm_to_wheel_velocity(_rpm)
+ms = kmh * 1000 / 3600
+rads = ms / wheel_radius
+actual_ms = ms
+max_force = adhesion_coefficient * 7000
+
+slip = slip_ratio(rads, actual_ms)
+traction_torque = wheel_traction_force(slip) * wheel_radius
+_drive_force = drive_force(engine_torque(_rpm))
+if _drive_force > max_force:
+    _drive_force = max_force
+drive_torque = _drive_force * wheel_radius
+total_torque = drive_torque + 2 * traction_torque
+angular_acceleration = total_torque / wheel_inertia
+
+print(angular_acceleration)
 
