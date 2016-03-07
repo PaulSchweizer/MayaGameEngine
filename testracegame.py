@@ -143,21 +143,16 @@ def slip_ratio(angular_velocity, velocity):
     speed in ms/s
     """
     if velocity == 0:
-        return 100.0
-    return (((angular_velocity * wheel_radius) - velocity) / velocity) * 100
-
-
-    # if velocity == 0:
-    #     return -100
-    # # end if
-    # slip_ratio = (((angular_velocity * wheel_radius) / velocity) - 1) * 100
-    # if slip_ratio > 100:
-    #     return 100
-    # elif slip_ratio < -100:
-    #     return -100
-    # else:
-    #     return slip_ratio
-    # # end if
+        return -100
+    # end if
+    slip_ratio = (((angular_velocity * wheel_radius) / velocity) - 1) * 100
+    if slip_ratio > 100:
+        return 100
+    elif slip_ratio < -100:
+        return -100
+    else:
+        return slip_ratio
+    # end if
 # end def slip_ratio
 
 
@@ -228,7 +223,7 @@ gear_ratio = 1
 velocity = 0
 _rpm = 1000
 velocity_rear = rpm_to_wheel_velocity(_rpm)
-for i in range(1):
+for i in range(100):
     # Calculate values
     _slip_ratio = slip_ratio(velocity_rear, velocity * (0.0002777777777777778 / 0.001))
     _drive_force = drive_force(engine_torque(_rpm))
@@ -250,23 +245,28 @@ for i in range(1):
     # Update the rpm
     _rpm = rpm(velocity_rear)
 
+    if i == 60:
+        gear_ratio = 1.6
+    if i == 70:
+        gear_ratio = 2
+    if i == 80:
+        gear_ratio = 2.6
+
 ###############################################################################
 
-_rpm = 1000
-kmh = rpm_to_wheel_velocity(_rpm)
-ms = kmh * 1000 / 3600
-rads = ms / wheel_radius
-actual_ms = ms
-max_force = adhesion_coefficient * 7000
+# _rpm = 1000
+# kmh = rpm_to_wheel_velocity(_rpm)
+# ms = kmh * 1000 / 3600
+# rads = ms / wheel_radius
+# actual_ms = ms
+# max_force = adhesion_coefficient * 7000
 
-slip = slip_ratio(rads, actual_ms)
-traction_torque = wheel_traction_force(slip) * wheel_radius
-_drive_force = drive_force(engine_torque(_rpm))
-if _drive_force > max_force:
-    _drive_force = max_force
-drive_torque = _drive_force * wheel_radius
-total_torque = drive_torque + 2 * traction_torque
-angular_acceleration = total_torque / wheel_inertia
-
-print(angular_acceleration)
+# slip = slip_ratio(rads, actual_ms)
+# traction_torque = wheel_traction_force(slip) * wheel_radius
+# _drive_force = drive_force(engine_torque(_rpm))
+# if _drive_force > max_force:
+#     _drive_force = max_force
+# drive_torque = _drive_force * wheel_radius
+# total_torque = drive_torque + 2 * traction_torque
+# angular_acceleration = total_torque / wheel_inertia
 
