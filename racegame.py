@@ -1,9 +1,9 @@
 import pymel.core as pm
 
-from rnkQtImportWrapper import loadUi, QtCore, QtGui
+from PySide import QtCore, QtGui
 
-from rnkRig.animation.mayagame import gameengine
-from rnkRig.animation.mayagame import vehicle
+import gameengine
+import vehicle
 reload(gameengine)
 reload(vehicle)
 

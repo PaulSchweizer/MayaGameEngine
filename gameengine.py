@@ -2,10 +2,7 @@ import pymel.core as pm
 
 import time
 
-from rnkQtImportWrapper import loadUi, QtCore, QtGui
-
-from rnkRig.core.qt import utils
-reload(utils)
+from PySide import QtCore, QtGui
 
 
 class GameEngine(QtGui.QWidget):
@@ -18,7 +15,10 @@ class GameEngine(QtGui.QWidget):
     def __init__(self, inner_widget=None):
         """Initialize the GameEngine."""
         super(GameEngine, self).__init__()
-        loadUi(utils.get_ui_file_path(__file__, 'GameEngine'), self)
+
+        self.setLayout(QtGui.QHBoxLayout())
+        self.start_btn = StartButton(self)
+        self.layout().addWidget(self.start_btn)
 
         # @TODO Provide a spot in the UI for the actual game menus,
         #       much like the ConfirmDialog with the inner widget
@@ -191,6 +191,7 @@ class StartButton(QtGui.QPushButton):
         super(StartButton, self).__init__(parent=parent)
         self.mouse_pressed = False
         self.running = False
+        self.setText('START')
     # end def __init__
 
     def mouseReleaseEvent(self, event):

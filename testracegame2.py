@@ -178,6 +178,8 @@ class Car(object):
         self.a = Vector(0, 0)
         self.wheel_rotation_rate = Vector(0, 0)
         self.usercontrol_rpm = 1000
+
+        self.axle_rot = 0
     # end def __init__
 
     @property
@@ -253,7 +255,7 @@ class Car(object):
     @property
     def traction_force(self):
         """@todo documentation for traction_force."""
-        return self.forward_vector * self.engine_force(1000)
+        return self.forward_vector * self.engine_force(self.usercontrol_rpm)
     # end def traction_force
 
     @property
@@ -273,7 +275,8 @@ class Car(object):
     def slip_ratio(self, wheel_rotation_rate, ms):
         """@todo documentation for slip_ratio."""
         if ms == 0:
-            return -6
+            return 6
+        # end if
         slip_ratio = (((wheel_rotation_rate) - ms) / ms) - 1
         return max(-6, min(slip_ratio, 6))
     # end def slip_ratio
@@ -313,27 +316,23 @@ class Car(object):
 
     def update(self, delta_time=1):
         """@todo documentation for update."""
-
-        # if self.wheel_rotation_rate.length() < self.rpm / ((self.gear_ratio * self.differential_ratio * 60) / (2.0 * math.pi)):
-        #     self.wheel_rotation_rate += delta_time * self.angular_acceleration #self.v / (2 * math.pi * self.wheel_radius)
-        # ang = (self.v.length() * 1000 / 3600.0) / self.wheel_radius
-        # self.wheel_rotation_rate = Vector(ang, 0)
-
         ang_wheel = self.usercontrol_rpm / ((self.gear_ratio * self.differential_ratio * 60) / (2.0 * math.pi))
         ms = self.v.length() * 0.277777777778
 
         slip_ratio = self.slip_ratio(ang_wheel, ms)
-        wheel_traction_force = Vector(slip_ratio * self.weight_transfer[1], 0)
+        wheel_traction_force = Vector(slip_ratio * self.weight_transfer[1], 0) * self.throttle_position
+        if wheel_traction_force.length() > self.weight_transfer[1]:
+            wheel_traction_force = Vector(self.weight_transfer[1], 0)
         total_force = (wheel_traction_force + self.air_resistance_force + self.internal_resistance_force)
-
-        if total_force.length() > self.weight_transfer[1]:
-            total_force = Vector(self.weight_transfer[1], 0)
 
         acceleration = total_force / self.mass
         self.v += delta_time * acceleration
 
-        # print(self.engine_force(self.usercontrol_rpm) * self.wheel_radius - wheel_traction_force.x, slip_ratio)
-        print(slip_ratio, self.v.x)
+
+        axle_acc = (self.engine.torque(self.usercontrol_rpm) / self.wheel_inertia) - wheel_traction_force.x
+        self.axle_rot = self.axle_rot + delta_time * axle_acc
+
+        print(ang_wheel, self.axle_rot)
     # end def update
 # end class Car
 
@@ -344,19 +343,24 @@ class Car(object):
 
 
 car = Car()
+car.gear = 1
+car.usercontrol_rpm = 1000
 
-
-for i in range(100):
+for i in range(10):
     car.update()
     if i == 20:
         print('GEAR SHIFT')
-        # car.usercontrol_rpm = 4000
-        car.gear = 3
+        car.usercontrol_rpm = 4000
+        car.gear = 1
     if i == 40:
         print('GEAR SHIFT')
-        car.usercontrol_rpm = 1000
-        # car.gear = 6
+        # car.usercontrol_rpm = 1000
+        car.gear = 1
         # car.usercontrol_rpm = 6600
+    if i == 60:
+        print('CLUTCH')
+        car.gear = 1
+        # car.throttle_position = 0
     # print(car.wheel_rotation_rate.length(), (car.v.length() * 1000 / 3600.0) / car.wheel_radius, car.slip_ratio)
 # end for
 
