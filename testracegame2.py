@@ -1,3 +1,7 @@
+"""
+http://stephenmason.com/cars/rotationalinertia.html
+
+"""
 import math
 from collections import OrderedDict
 
@@ -7,6 +11,7 @@ COEFFICIENT_OF_FRICTION = 0.3
 AIR_DENSITY = 1.29
 TRACTION_CONSTANT = 1000.0
 ADHESION_COEFFICIENT = 0.7
+GRAVITY = 9.81
 
 
 class Vector(object):
@@ -150,7 +155,7 @@ class Car(object):
     def __init__(self):
         """Initialize Car."""
         self.length = 2.5
-        self.mass = 1500.0
+        self.mass = 2000.0
         self.cog = 1.00
         self.wheel_mass = 75.0
         self.wheel_radius = 0.34
@@ -168,10 +173,11 @@ class Car(object):
 
         self.engine = Engine()
 
-        self.u = Vector(1, 0)
+        self.forward_vector = Vector(1, 0)
         self.v = Vector(0, 0)
         self.a = Vector(0, 0)
         self.wheel_rotation_rate = Vector(0, 0)
+        self.usercontrol_rpm = 1000
     # end def __init__
 
     @property
@@ -209,8 +215,16 @@ class Car(object):
         """
         c = self.length / 2.0
         b = self.length / 2.0
-        weight_front = (c/self.length) * self.mass * 9.81 - (self.cog/self.length) * self.mass * self.acceleration.length()
-        weight_rear = (b/self.length) * self.mass * 9.81 + (self.cog/self.length) * self.mass * self.acceleration.length()
+        weight_front = ((c/self.length) *
+                        self.mass *
+                        GRAVITY - (self.cog/self.length) *
+                        self.mass *
+                        self.acceleration.length())
+        weight_rear = ((b/self.length) *
+                       self.mass *
+                       GRAVITY + (self.cog/self.length) *
+                       self.mass *
+                       self.acceleration.length())
         return weight_front, weight_rear
     # end def weight_transfer
 
@@ -220,14 +234,16 @@ class Car(object):
 
         wheel_rotation_rate in rad/s
         """
-        rpm = (self.wheel_rotation_rate.length() * self.gear_ratio * self.differential_ratio * 60.0) / (2.0 * math.pi)
-        return max(0, min(rpm, 6600))
+        rpm = (self.wheel_rotation_rate.length() *
+               self.gear_ratio *
+               self.differential_ratio *
+               60.0) / (2.0 * math.pi)
+        return max(1000, min(rpm, 6000))
     # end def rpm
 
-    @property
-    def engine_force(self):
+    def engine_force(self, rpm):
         """@todo documentation for engine_force."""
-        return ((self.engine.torque(self.rpm) *
+        return ((self.engine.torque(rpm) *
                  self.gear_ratio *
                  self.differential_ratio *
                  self.transmission_efficiency *
@@ -237,7 +253,7 @@ class Car(object):
     @property
     def traction_force(self):
         """@todo documentation for traction_force."""
-        return self.u * self.engine_force
+        return self.forward_vector * self.engine_force(1000)
     # end def traction_force
 
     @property
@@ -254,49 +270,70 @@ class Car(object):
         return self.long_force / self.mass
     # end def acceleration
 
-    @property
-    def slip_ratio(self):
+    def slip_ratio(self, wheel_rotation_rate, ms):
         """@todo documentation for slip_ratio."""
-        if self.v.length() == 0:
-            return 1
-        return (((self.wheel_rotation_rate.length() * self.wheel_radius) - self.v.length()) / self.v.length())
+        if ms == 0:
+            return -6
+        slip_ratio = (((wheel_rotation_rate) - ms) / ms) - 1
+        return max(-6, min(slip_ratio, 6))
     # end def slip_ratio
 
-    @property
-    def wheel_traction_force(self):
-        """@todo documentation for wheel_traction_force."""
-        # wheel_traction_force = Vector(self.slip_ratio * self.weight_transfer[1], 0)
-        # if wheel_traction_force.length() > self.weight_transfer[1]:
-        #     return Vector(self.weight_transfer[1], 0)
-        # elif wheel_traction_force.length() < -self.weight_transfer[1]:
-        #     return Vector(-self.weight_transfer[1], 0)
-        # else:
-        #     return wheel_traction_force
-        # # end if
-        return Vector(-0.7 * self.weight_transfer[1], 0)
-    # end def wheel_traction_force
+    # @property
+    # def wheel_traction_force(self):
+    #     """@todo documentation for wheel_traction_force."""
+    #     # wheel_traction_force = Vector(self.slip_ratio * self.weight_transfer[1], 0)
+    #     # if wheel_traction_force.length() > self.weight_transfer[1]:
+    #     #     return Vector(self.weight_transfer[1], 0)
+    #     # elif wheel_traction_force.length() < -self.weight_transfer[1]:
+    #     #     return Vector(-self.weight_transfer[1], 0)
+    #     # else:
+    #     #     return wheel_traction_force
+    #     # # end if
+    #     return Vector(ADHESION_COEFFICIENT * self.weight_transfer[1], 0)
+    # # end def wheel_traction_force
 
-    def miiro(self):
-        """@todo documentation for miiro."""
-        print('Hello Miiro')
-    # end def miiro
+    # @property
+    # def max_wheel_traction_force(self):
+    #     """@todo documentation for max_wheel_traction_force."""
+    #     return Vector(ADHESION_COEFFICIENT * self.weight_transfer[1], 0)
+    # # end def max_wheel_traction_force
 
-    @property
-    def total_torque(self):
-        """@todo documentation for total_torque."""
-        return self.long_force * self.wheel_radius + self.wheel_traction_force * self.wheel_radius
-    # end def total_torque
+    # @property
+    # def total_torque(self):
+    #     """@todo documentation for total_torque."""
+    #     return (self.long_force * self.wheel_radius -
+    #             self.wheel_traction_force * self.wheel_radius)
+    # # end def total_torque
 
-    @property
-    def angular_acceleration(self):
-        """@todo documentation for angular_acceleration."""
-        return self.total_torque / self.wheel_inertia
-    # end def angular_acceleration
+    # @property
+    # def angular_acceleration(self):
+    #     """@todo documentation for angular_acceleration."""
+    #     return Vector((self.engine.torque(self.rpm) / self.wheel_inertia), 0) * (1/self.gear_ratio)
+    # # end def angular_acceleration
 
     def update(self, delta_time=1):
         """@todo documentation for update."""
-        self.v += delta_time * self.acceleration
-        self.wheel_rotation_rate += delta_time * self.angular_acceleration #self.v / (2 * math.pi * self.wheel_radius)
+
+        # if self.wheel_rotation_rate.length() < self.rpm / ((self.gear_ratio * self.differential_ratio * 60) / (2.0 * math.pi)):
+        #     self.wheel_rotation_rate += delta_time * self.angular_acceleration #self.v / (2 * math.pi * self.wheel_radius)
+        # ang = (self.v.length() * 1000 / 3600.0) / self.wheel_radius
+        # self.wheel_rotation_rate = Vector(ang, 0)
+
+        ang_wheel = self.usercontrol_rpm / ((self.gear_ratio * self.differential_ratio * 60) / (2.0 * math.pi))
+        ms = self.v.length() * 0.277777777778
+
+        slip_ratio = self.slip_ratio(ang_wheel, ms)
+        wheel_traction_force = Vector(slip_ratio * self.weight_transfer[1], 0)
+        total_force = (wheel_traction_force + self.air_resistance_force + self.internal_resistance_force)
+
+        if total_force.length() > self.weight_transfer[1]:
+            total_force = Vector(self.weight_transfer[1], 0)
+
+        acceleration = total_force / self.mass
+        self.v += delta_time * acceleration
+
+        # print(self.engine_force(self.usercontrol_rpm) * self.wheel_radius - wheel_traction_force.x, slip_ratio)
+        print(slip_ratio, self.v.x)
     # end def update
 # end class Car
 
@@ -308,11 +345,19 @@ class Car(object):
 
 car = Car()
 
-car.miiro()
 
 for i in range(100):
     car.update()
-    print(car.v)
+    if i == 20:
+        print('GEAR SHIFT')
+        # car.usercontrol_rpm = 4000
+        car.gear = 3
+    if i == 40:
+        print('GEAR SHIFT')
+        car.usercontrol_rpm = 1000
+        # car.gear = 6
+        # car.usercontrol_rpm = 6600
+    # print(car.wheel_rotation_rate.length(), (car.v.length() * 1000 / 3600.0) / car.wheel_radius, car.slip_ratio)
 # end for
 
 
