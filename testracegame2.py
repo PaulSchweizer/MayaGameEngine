@@ -155,16 +155,16 @@ class Car(object):
     def __init__(self):
         """Initialize Car."""
         self.length = 2.5
-        self.mass = 2000.0
+        self._mass = 1500.0
         self.cog = 1.00
         self.wheel_mass = 75.0
-        self.wheel_radius = 0.34
+        self.wheel_radius = 0.33
         self.windshield_area = 2.2
         self.gear = 1
         self._gear_ratio = [2.90, 2.66, 1.78, 1.30, 1.0, 0.74, 0.5]
         self.differential_ratio = 3.42
         self.transmission_efficiency = 0.7
-        self.wheel_inertia = self.wheel_mass * self.wheel_radius**2
+        self._wheel_inertia = self.wheel_mass * self.wheel_radius**2
         self.air_resistance_constant = (0.5 * COEFFICIENT_OF_FRICTION *
                                         self.windshield_area * AIR_DENSITY)
 
@@ -179,8 +179,23 @@ class Car(object):
         self.wheel_rotation_rate = Vector(0, 0)
         self.usercontrol_rpm = 1000
 
+        self.acceleration = Vector(0, 0)
         self.axle_rot = 0
+        self.ang_wheel = 0
     # end def __init__
+
+    @property
+    def mass(self):
+        """@todo documentation for mass"""
+        return (self._mass * (1 + 0.04 + 0.0025 * (self.differential_ratio * self.gear_ratio)**2))
+    # end def mass
+
+    @property
+    def wheel_inertia(self):
+        """@todo documentation for wheel_inertia"""
+        return self._wheel_inertia
+        return (self.wheel_mass * (1 + 0.04 + 0.0025 * (self.differential_ratio * self.gear_ratio)**2)) * self.wheel_radius**2 * 100
+    # end def wheel_inertia
 
     @property
     def gear_ratio(self):
@@ -266,18 +281,18 @@ class Car(object):
                 self.internal_resistance_force)
     # end def long_force
 
-    @property
-    def acceleration(self):
-        """@todo documentation for acceleration."""
-        return self.long_force / self.mass
-    # end def acceleration
+    # @property
+    # def acceleration(self):
+    #     """@todo documentation for acceleration."""
+    #     return self.long_force / self.mass
+    # # end def acceleration
 
     def slip_ratio(self, wheel_rotation_rate, ms):
         """@todo documentation for slip_ratio."""
         if ms == 0:
             return 6
         # end if
-        slip_ratio = (((wheel_rotation_rate) - ms) / ms) - 1
+        slip_ratio = (((wheel_rotation_rate) - ms) / ms)
         return max(-6, min(slip_ratio, 6))
     # end def slip_ratio
 
@@ -316,25 +331,80 @@ class Car(object):
 
     def update(self, delta_time=1):
         """@todo documentation for update."""
-        ang_wheel = self.usercontrol_rpm / ((self.gear_ratio * self.differential_ratio * 60) / (2.0 * math.pi))
         ms = self.v.length() * 0.277777777778
-
-        slip_ratio = self.slip_ratio(ang_wheel, ms)
-        wheel_traction_force = Vector(slip_ratio * self.weight_transfer[1], 0) * self.throttle_position
+        slip_ratio = self.slip_ratio(self.axle_rot / 60, ms)
+        wheel_traction_force = Vector(slip_ratio * self.weight_transfer[1], 0)
         if wheel_traction_force.length() > self.weight_transfer[1]:
             wheel_traction_force = Vector(self.weight_transfer[1], 0)
-        total_force = (wheel_traction_force + self.air_resistance_force + self.internal_resistance_force)
+        wheel_traction_force = wheel_traction_force * ADHESION_COEFFICIENT
 
-        acceleration = total_force / self.mass
-        self.v += delta_time * acceleration
+        # Update the speed
+        traction_torque = wheel_traction_force.x * self.wheel_radius
 
+        total_force = (wheel_traction_force +
+                       self.air_resistance_force +
+                       self.internal_resistance_force)
 
-        axle_acc = (self.engine.torque(self.usercontrol_rpm) / self.wheel_inertia) - wheel_traction_force.x
+        self.acceleration = total_force / self.mass
+        self.v += delta_time * self.acceleration
+
+        # Update the wheel rotation
+        drive_torque = (self.engine.torque(self.usercontrol_rpm) *
+                        self.gear_ratio *
+                        self.differential_ratio *
+                        self.transmission_efficiency *
+                        self.throttle_position)
+        total_torque = (drive_torque * self.wheel_radius) - traction_torque
+        axle_acc = (total_torque / self.wheel_inertia)
         self.axle_rot = self.axle_rot + delta_time * axle_acc
 
-        print(ang_wheel, self.axle_rot)
+        max_rot = ((6000 / (self.gear_ratio * self.differential_ratio)))
+        if self.axle_rot > max_rot:
+            self.axle_rot = max_rot
+        if self.axle_rot < 0:
+            self.axle_rot = 0
+
+
+
+        # ang_wheel = self.usercontrol_rpm / ((self.gear_ratio * self.differential_ratio * 60) / (2.0 * math.pi))
+        # ms = self.v.length() * 0.277777777778
+
+        # slip_ratio = self.slip_ratio(self.axle_rot, ms)
+        # wheel_traction_force = Vector(slip_ratio * self.weight_transfer[1], 0)
+        # if wheel_traction_force.length() > self.weight_transfer[1]:
+        #     wheel_traction_force = Vector(self.weight_transfer[1], 0)
+        # wheel_traction_force = wheel_traction_force * ADHESION_COEFFICIENT
+
+
+        # Axle acceleration
+        # tractive_effort = self.weight_transfer[1] * ADHESION_COEFFICIENT * self.wheel_radius
+        # traction_torque = wheel_traction_force.x * self.wheel_radius
+        # drive_torque = (self.engine.torque(self.usercontrol_rpm) *
+        #                 self.gear_ratio *
+        #                 self.differential_ratio *
+        #                 self.transmission_efficiency *
+        #                 self.throttle_position)
+        # drive_torque = self.traction_force
+        # total_torque = drive_torque * self.wheel_radius - traction_torque
+        # axle_acc = (wheel_traction_force.x * self.wheel_radius) / self.wheel_inertia
+
+        # self.axle_rot = self.axle_rot + delta_time * axle_acc
+
+        # Calculate the rpm
+        self.usercontrol_rpm = max(1000, min((self.axle_rot * self.gear_ratio * self.differential_ratio * 60) / (2 * math.pi), 6000))
+        # if rpm > 1000 and rpm < 6000:
+        #     self.usercontrol_rpm = rpm
+        # if rpm >
+
+        # ang_wheel = self.usercontrol_rpm / ((self.gear_ratio * self.differential_ratio * 60) / (2.0 * math.pi))
+
+        max_kmh = ((6000 / (self.gear_ratio * self.differential_ratio)) * 2 * math.pi * self.wheel_radius) / (1000 / 60)
+
+        print(max_rot, self.axle_rot, self.v.x)
+
     # end def update
 # end class Car
+
 
 
 ###############################################################################
@@ -344,23 +414,31 @@ class Car(object):
 
 car = Car()
 car.gear = 1
-car.usercontrol_rpm = 1000
+# car.usercontrol_rpm = 1000
 
-for i in range(10):
+for i in range(100):
     car.update()
+
+    # if car.usercontrol_rpm > 5000 and car.gear < 6:
+    #     print('GEAR SHIFTING TO: %s' % (car.gear + 1))
+    #     car.gear += 1
+    continue
+
     if i == 20:
         print('GEAR SHIFT')
-        car.usercontrol_rpm = 4000
+        # car.usercontrol_rpm = 4000
         car.gear = 1
+    continue
     if i == 40:
         print('GEAR SHIFT')
         # car.usercontrol_rpm = 1000
-        car.gear = 1
-        # car.usercontrol_rpm = 6600
+        car.gear = 3
+        car.throttle_position = 1
+        # car.usercontrol_rpm = 1600
     if i == 60:
-        print('CLUTCH')
-        car.gear = 1
-        # car.throttle_position = 0
+        print('GEAR SHIFT')
+        car.gear = 4
+        car.throttle_position = 1
     # print(car.wheel_rotation_rate.length(), (car.v.length() * 1000 / 3600.0) / car.wheel_radius, car.slip_ratio)
 # end for
 
