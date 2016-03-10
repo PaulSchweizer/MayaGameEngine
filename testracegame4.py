@@ -175,19 +175,19 @@ class Car(object):
 
         self.forward_vector = Vector(1, 0)
         self.v = Vector(0, 0)
-        self.a = Vector(0, 0)
         self.wheel_rotation_rate = Vector(0, 0)
-        self.usercontrol_rpm = 1000
+        self.usercontrol_rpm = 5000
 
         self.acceleration = Vector(0, 0)
-        self.wheel_angular_velocity = Vector(0, 0)
+        self.wheel_angular_velocity = 0
         self.ang_wheel = 0
     # end def __init__
 
     @property
     def mass(self):
         """@todo documentation for mass"""
-        return (self._mass * (1 + 0.04 + 0.0025 * (self.differential_ratio * self.gear_ratio)**2))
+        return (self._mass *
+                (1 + 0.04 + 0.0025 * (self.differential_ratio * self.gear_ratio)**2))
     # end def mass
 
     @property
@@ -248,10 +248,11 @@ class Car(object):
     @property
     def ms(self):
         """@todo documentation for ms."""
+        return 5
         return self.v.length() * 0.277777777778
     # end def ms
 
-    def drive_torque(self, rpm=1):
+    def drive_torque(self, rpm=1000):
         """@todo documentation for drive_torque."""
         return (self.engine.torque(rpm) *
                 self.gear_ratio *
@@ -263,62 +264,123 @@ class Car(object):
     def slip_ratio(self, wheel_rotation_rate, ms):
         """@todo documentation for slip_ratio."""
         if ms == 0:
-            return 6
+            return self.weight_transfer[1] / 1000.0
         # end if
-        slip_ratio = (((wheel_rotation_rate) - ms) / ms)
-        return max(-6, min(slip_ratio, 6))
+        slip_ratio = -(((wheel_rotation_rate * self.wheel_radius) - ms) / ms) * 100
+        return max(-self.weight_transfer[1] / 1000.0, min(slip_ratio, self.weight_transfer[1] / 1000.0))
     # end def slip_ratio
 
     @property
     def max_angular_velocity(self):
         """@todo documentation for max_angular_velocity."""
-        return ((5000 / (self.gear_ratio * self.differential_ratio))) / 60
+        return ((6000 / (self.gear_ratio * self.differential_ratio * self.transmission_efficiency)))
     # end def max_angular_velocity
 
-    def update(self, delta_time=10):
+    def shift_gear(self, gear):
+        """@todo documentation for shift_gear"""
+        if gear < len(self._gear_ratio):
+            self.gear = gear
+            print 'GEAR SHIFT: %s' % gear
+        # end if
+    # end def shift_gear
+
+    def update(self, delta_time=1):
         """"""
-        # 1. Get the traction force
-        slip_ratio = self.slip_ratio(self.wheel_angular_velocity.x, self.ms)
-        f_long = Vector(1000 * slip_ratio, 0)
-        traction_torque = f_long * self.wheel_radius
-        drive_torque = self.drive_torque()
-        total_torque = drive_torque - traction_torque.x
+        slip_ratio = self.slip_ratio(self.wheel_angular_velocity / 60, self.ms)
+        f_long = Vector(1100 * slip_ratio, 0)
 
-        # 2. Accelerate the rear wheel
-        if self.wheel_angular_velocity.x < self.max_angular_velocity:
-            angular_acceleration = (total_torque / self._wheel_inertia) / 60
-            self.wheel_angular_velocity.x += angular_acceleration * delta_time
-        else:
-            self.wheel_angular_velocity.x = self.max_angular_velocity
-
-        # 3. Accelerate the Car itself
-        traction_force = f_long + self.air_resistance_force + self.internal_resistance_force
-        acceleration = traction_force/ self.weight_transfer[1]
-        self.v += acceleration * delta_time
+        drive_torque = self.drive_torque(self.usercontrol_rpm)
+        angular_acceleration = (drive_torque / self._wheel_inertia)
+        self.wheel_angular_velocity += angular_acceleration * self.wheel_radius * delta_time
+        if self.wheel_angular_velocity > self.max_angular_velocity:
+            self.wheel_angular_velocity = self.max_angular_velocity
 
 
-        print(self.wheel_angular_velocity.x, self.ms, self.v.x)
+
+        print slip_ratio, f_long
+
+
+
+
+
+        rpm = (self.wheel_angular_velocity *
+               self.gear_ratio *
+               self.differential_ratio *
+               self.transmission_efficiency)
+
+
+
+        # drive_force = self.drive_torque(self.usercontrol_rpm) / self.wheel_radius
+        # traction_force = drive_force + self.air_resistance_force.x + self.internal_resistance_force.x
+        # acceleration = traction_force / self.mass
+
+        # # print acceleration
+        # self.v.x += acceleration * delta_time
+
+
+        # print self.v.x
+
+
+
+        # # 1. Get the traction force
+        # rpm = (self.wheel_angular_velocity *
+        #        self.gear_ratio *
+        #        self.differential_ratio *
+        #        self.transmission_efficiency)
+        # slip_ratio = self.slip_ratio(self.wheel_angular_velocity / 60 * self.wheel_radius, self.ms)
+        # f_long = Vector(1100 * slip_ratio, 0)
+        # traction_torque = f_long * self.wheel_radius
+        # drive_torque = self.drive_torque(rpm)
+        # total_torque = drive_torque - traction_torque.x
+
+        # # 2. Accelerate the rear wheel
+        # angular_acceleration = (total_torque / self._wheel_inertia)
+        # self.wheel_angular_velocity += angular_acceleration * delta_time
+        # if self.wheel_angular_velocity > self.max_angular_velocity:
+        #     self.wheel_angular_velocity = self.max_angular_velocity
+
+        # # if rpm > 5999:
+        # #     self.shift_gear(self.gear + 1)
+
+
+        # # 3. Accelerate the Car itself
+        # traction_force = (traction_force +
+        #                   self.air_resistance_force.x +
+        #                   self.internal_resistance_force.x)
+        # acceleration = traction_force / self.mass
+        # self.v.x += acceleration * delta_time
+
+
+
+        # print rpm, self.v.x
+
+
+        # print self.slip_ratio(self.ms - 1, self.ms)
+
+        # return
     # end def update
 # end class Car
 
 
 car = Car()
+car.gear = 1
 
 
-for i in range(50):
+for i in range(70):
     car.update()
-
-    # if i == 20:
-    #     print('GEAR SHIFT')
-    #     # car.usercontrol_rpm = 4000
-    #     car.gear = 3
-    # if i == 40:
-    #     print('GEAR SHIFT')
-    #     # car.usercontrol_rpm = 1000
-    #     car.gear = 5
-    #     car.throttle_position = 1
-    #     # car.usercontrol_rpm = 1600
-    # if i == 60:
-    #     print('GEAR SHIFT')
-    #     car.gear = 6
-    #     car.throttle_position = 1
+    continue
+    if i == 20:
+        print('GEAR SHIFT')
+        # car.usercontrol_rpm = 4000
+        car.gear = 2
+        car.throttle_position = 1
+    if i == 40:
+        print('GEAR SHIFT')
+        # car.usercontrol_rpm = 1000
+        car.gear = 3
+        car.throttle_position = 1
+        # car.usercontrol_rpm = 1600
+    if i == 60:
+        print('GEAR SHIFT')
+        car.gear = 1
+        car.throttle_position = 1
