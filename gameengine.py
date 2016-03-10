@@ -56,11 +56,17 @@ class GameEngine(QtGui.QWidget):
     def keyPressEvent(self, event):
         """Register the pressed key in the key map."""
         self.input_manager.keyPressEvent(event)
+        for game_object in self.game_objects:
+            game_object.key_press_event(event)
+        # end for
     # end def keyPressEvent
 
     def keyReleaseEvent(self, event):
         """De-register the pressed key in the key map."""
         self.input_manager.keyReleaseEvent(event)
+        for game_object in self.game_objects:
+            game_object.key_release_event(event)
+        # end for
     # end def keyPressEvent
 
     def closeEvent(self, event):
@@ -222,6 +228,22 @@ class GameObject(object):
         """
         self.transform = pm.PyNode(transform)
     # end def __init__
+
+    def key_press_event(self, event):
+        """Method to implement key press input events.
+
+        @param event The QtGui event
+        """
+        pass
+    # end def key_press_event
+
+    def key_release_event(self, event):
+        """Method to implement key release input events.
+
+        @param event The QtGui event
+        """
+        pass
+    # end def key_release_event
 
     def update(self, delta_time):
         """Called on every frame update.

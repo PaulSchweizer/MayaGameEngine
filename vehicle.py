@@ -161,10 +161,10 @@ class Vehicle(gameengine.GameObject):
         self.transform.setTranslation([0, 0, 0])
 
         self.length = 2.5
-        self.mass = 1500.0
+        self._mass = 1500.0
         self.cog = 1.00
         self.wheel_mass = 75.0
-        self.wheel_radius = 0.34
+        self.wheel_radius = 0.33
         self.windshield_area = 2.2
         self.gear = 1
         self._gear_ratio = [2.90, 2.66, 1.78, 1.30, 1.0, 0.74, 0.5]
@@ -179,21 +179,20 @@ class Vehicle(gameengine.GameObject):
 
         self.engine = Engine()
 
-        self.u = pm.datatypes.Vector(0, 0, 1)
-        self.v = pm.datatypes.Vector(0, 0, 0)
-        self.a = Vector(0, 0)
+        self.v = Vector(0, 0)
         self.wheel_rotation_rate = Vector(0, 0)
-        self.usercontrol_rpm = 1000
+        self.rpm = 1000
+
+        self.acceleration = Vector(0, 0)
+        self.wheel_angular_velocity = 0
+        self.ang_wheel = 0
     # end def __init__
 
     @property
-    def brake_force(self):
-        """@todo documentation for brake_force."""
-        if self.game_engine.input_manager.Key_Down[0]:
-            return pm.datatypes.Vector(-12, 0, 0)
-        else:
-            return pm.datatypes.Vector(0, 0, 0)
-    # end def brake_force
+    def mass(self):
+        """@todo documentation for mass"""
+        return (self._mass * (1 + 0.04 + 0.0025 * (self.differential_ratio * self.gear_ratio)**2))
+    # end def mass
 
     @property
     def gear_ratio(self):
@@ -244,98 +243,93 @@ class Vehicle(gameengine.GameObject):
     # end def weight_transfer
 
     @property
-    def rpm(self):
-        """Rpm of the engine.
+    def ms(self):
+        """@todo documentation for ms."""
+        return self.v.length() * 0.277777777778
+    # end def ms
 
-        wheel_rotation_rate in rad/s
-        """
-        rpm = (self.wheel_rotation_rate.length() *
-               self.gear_ratio *
-               self.differential_ratio *
-               60.0) / (2.0 * math.pi)
-        return max(1000, min(rpm, 6000))
-    # end def rpm
-
-    def engine_force(self, rpm):
-        """@todo documentation for engine_force."""
-        return ((self.engine.torque(rpm) *
-                 self.gear_ratio *
-                 self.differential_ratio *
-                 self.transmission_efficiency *
-                 self.throttle_position) / self.wheel_radius)
-    # end def engine_force
-
-    @property
-    def traction_force(self):
-        """@todo documentation for traction_force."""
-        return self.u * self.engine_force(self.usercontrol_rpm)
-    # end def traction_force
-
-    @property
-    def long_force(self):
-        """@todo documentation for long_force."""
-        return (self.traction_force +
-                self.air_resistance_force +
-                self.internal_resistance_force)
-    # end def long_force
-
-    @property
-    def acceleration(self):
-        """@todo documentation for acceleration."""
-        return self.long_force / self.mass
-    # end def acceleration
+    def drive_torque(self, rpm):
+        """@todo documentation for drive_torque."""
+        return (self.engine.torque(rpm) *
+                self.gear_ratio *
+                self.differential_ratio *
+                self.transmission_efficiency *
+                self.throttle_position)
+    # end def drive_torque
 
     def slip_ratio(self, wheel_rotation_rate, ms):
         """@todo documentation for slip_ratio."""
-        if ms == 0:
-            return 6
+        if ms == 0 and self.throttle_position == 0:
+            return 0.0
+        elif ms == 0 and self.throttle_position != 0:
+            return self.weight_transfer[1] / 1000.0
+        elif wheel_rotation_rate == 0 and self.throttle_position == 0:
+            return 0.0
+        elif wheel_rotation_rate == 0 and self.throttle_position != 0:
+            return self.weight_transfer[1] / 1000.0
         # end if
-        slip_ratio = (((wheel_rotation_rate) - ms) / ms) - 1
-        return max(-6, min(slip_ratio, 6))
+        slip_ratio = (((wheel_rotation_rate) - ms) / ms)
+        return max(-self.weight_transfer[1] / 1000.0, min(slip_ratio, self.weight_transfer[1] / 1000.0))
     # end def slip_ratio
 
+    @property
+    def max_angular_velocity(self):
+        """@todo documentation for max_angular_velocity."""
+        return (6000 / self.gear_ratio / self.differential_ratio / 60)
+    # end def max_angular_velocity
+
     def update(self, delta_time):
-        """Update the vehicle position."""
-        # Change the gear
-        if self.game_engine.input_manager.Key_1[0]:
-            self.gear = 1
-        if self.game_engine.input_manager.Key_2[0]:
-            self.gear = 2
-        if self.game_engine.input_manager.Key_3[0]:
-            self.gear = 3
-
-        if self.game_engine.input_manager.Key_Up[0]:
-            if self.usercontrol_rpm < 6000:
-                self.usercontrol_rpm += 600 * delta_time
-            self.throttle_position = 1
+        """"""
+        #### Throttle up / down
+        if self.game_engine.input_manager.Key_Up[1]:
+            self.throttle_position = (min(self.throttle_position + delta_time / 1.5, 1))
         else:
-            if self.usercontrol_rpm > 1000:
-                self.usercontrol_rpm -= 600 * delta_time
-            self.throttle_position = 0
-
-        if self.game_engine.input_manager.Key_Down[0]:
-            self.throttle_position = 0
-
-        ang_wheel = self.usercontrol_rpm / ((self.gear_ratio * self.differential_ratio * 60) / (2.0 * math.pi))
-        ms = self.v.length() * 0.277777777778
-
-        slip_ratio = self.slip_ratio(ang_wheel, ms)
-        wheel_traction_force = pm.datatypes.Vector(0, 0, slip_ratio * self.weight_transfer[1])
-        if wheel_traction_force.length() > self.weight_transfer[1]:
-            wheel_traction_force = pm.datatypes.Vector(0, 0, self.weight_transfer[1])
-        total_force = (wheel_traction_force + self.air_resistance_force + self.internal_resistance_force + self.brake_force)
-
-        acceleration = total_force / self.mass
-        if self.v.x >= 0:
-            self.v += delta_time * acceleration
-        else:
-            self.v = pm.datatypes.Vector(0, 0, 0)
+            self.throttle_position = (max(0, self.throttle_position - delta_time / 1.5))
         # end if
 
-        p = self.position + delta_time * self.v
+        #### The drive logic
+        drive_torque = self.drive_torque(self.rpm)
+        angular_acceleration = drive_torque / self.wheel_inertia / 60
+        self.wheel_angular_velocity += angular_acceleration * delta_time
+        self.wheel_angular_velocity = max(0, min(self.wheel_angular_velocity, self.max_angular_velocity))
+        slip_ratio = self.slip_ratio(self.wheel_angular_velocity, self.ms)
+        f_long = Vector(1100 * slip_ratio, 0)
+        traction_force = (f_long.x +
+                          self.air_resistance_force.x +
+                          self.internal_resistance_force.x)
+        acceleration = traction_force / self.mass
+        self.v.x += acceleration * delta_time
+        self.rpm = self.wheel_angular_velocity * self.gear_ratio * self.differential_ratio * 60 / 2 * math.pi * self.transmission_efficiency
+
+        p = self.position + delta_time * pm.datatypes.Vector(0, 0, self.v.x)
         self.transform.setTranslation(p, ws=True)
-
-
-        print(wheel_traction_force)
     # end def update
+
+    def key_press_event(self, event):
+        """Method to implement key press input events.
+
+        @param event The QtGui event
+        """
+        pass
+    # end def key_press_event
+
+    def key_release_event(self, event):
+        """Method to implement key release input events.
+
+        @param event The QtGui event
+        """
+        if event.key() == QtCore.Qt.Key_1:
+            self.gear = 1
+        elif event.key() == QtCore.Qt.Key_2:
+            self.gear = 2
+        elif event.key() == QtCore.Qt.Key_3:
+            self.gear = 3
+        elif event.key() == QtCore.Qt.Key_4:
+            self.gear = 4
+        elif event.key() == QtCore.Qt.Key_5:
+            self.gear = 5
+        elif event.key() == QtCore.Qt.Key_6:
+            self.gear = 6
+        # end if
+    # end def key_release_event
 # end class Vehicle
