@@ -1,0 +1,1445 @@
+{
+	"auto_complete":
+	{
+		"selected_items":
+		[
+			[
+				"use",
+				"_useCost	int"
+			],
+			[
+				"_curren",
+				"_currentMagic	float"
+			],
+			[
+				"Re",
+				"MagicRegenerationRate	float { get; }"
+			],
+			[
+				"Max",
+				"MaxMagic	int { get; }"
+			],
+			[
+				"_current",
+				"_currentMagic	int"
+			],
+			[
+				"Skill",
+				"SkillDatabase	SkillDatabase"
+			],
+			[
+				"tr",
+				"ItemTriggered(InventoryItem item)	void"
+			],
+			[
+				"INven",
+				"InventoryItem	InventoryItem"
+			],
+			[
+				"Inven",
+				"InventoryItem	InventoryItem"
+			],
+			[
+				"_skill",
+				"_skillDatabase	SkillDatabase"
+			],
+			[
+				"St",
+				"Stats	Stats { get; set; }"
+			],
+			[
+				"Col",
+				"Color	Color"
+			],
+			[
+				"Co",
+				"color	Color { get; set; }"
+			],
+			[
+				"I",
+				"_id	int"
+			],
+			[
+				"_",
+				"_name	string"
+			],
+			[
+				"Serial",
+				"SerializeField	SerializeField"
+			],
+			[
+				"Seri",
+				"SerializeMe	SerializeMe"
+			],
+			[
+				"Player",
+				"Player	Player"
+			],
+			[
+				"Save",
+				"SaveData(string fileName, object data)	void"
+			],
+			[
+				"A",
+				"AddInventory(Inventory inventory)	void"
+			],
+			[
+				"Add",
+				"AddItem(InventoryItem item, int quantity)	void"
+			],
+			[
+				"for",
+				"foreach	foreach"
+			],
+			[
+				"Inventory",
+				"Inventory	Inventory"
+			],
+			[
+				"inv",
+				"_inventory	Inventory"
+			],
+			[
+				"Get",
+				"GetComponent(string type)	Component"
+			],
+			[
+				"game",
+				"gameObject	GameObject { get; }"
+			],
+			[
+				"Att",
+				"AttackRange	float { get; }"
+			],
+			[
+				"Update",
+				"UpdateAttribute()	void"
+			],
+			[
+				"Upda",
+				"UpdateAvailableSkillPoints()	void"
+			],
+			[
+				"Char",
+				"Character	Character"
+			],
+			[
+				"Chara",
+				"Character	Character"
+			],
+			[
+				"cha",
+				"CharacterDefinition	CharacterDefinition { get; set; }"
+			],
+			[
+				"Upd",
+				"UpdateExperienceSlider()	void"
+			],
+			[
+				"ro",
+				"rotation	Quaternion { get; set; }"
+			],
+			[
+				"Camera",
+				"CameraRig	CameraRig"
+			],
+			[
+				"gameObject",
+				"GameObject	GameObject"
+			],
+			[
+				"a",
+				"_activeSkills	List<Skill>"
+			],
+			[
+				"pl",
+				"_playerController	PlayerController"
+			],
+			[
+				"n",
+				"buildIndex	int { get; }"
+			],
+			[
+				"c",
+				"GetActiveScene()	Scene"
+			],
+			[
+				"Scen",
+				"SceneManager	SceneManager"
+			],
+			[
+				"scne",
+				"SceneState	SceneState"
+			],
+			[
+				"Reso",
+				"Resources	Resources"
+			],
+			[
+				"Res",
+				"Resources	Resources"
+			],
+			[
+				"LoadLe",
+				"LoadLevelAsync(int index)	AsyncOperation"
+			],
+			[
+				"DobDe",
+				"DontDestroyOnLoad(Object target)	void"
+			],
+			[
+				"main",
+				"_mainController	MainController"
+			],
+			[
+				"As",
+				"AsyncOperation	AsyncOperation"
+			],
+			[
+				"_s",
+				"_skillPanel	RectTransform"
+			],
+			[
+				"Rect",
+				"RectTransform	RectTransform"
+			],
+			[
+				"In",
+				"InventoryViewItem	InventoryViewItem"
+			],
+			[
+				"Model",
+				"ModelItemInt	ModelItemInt"
+			],
+			[
+				"Mo",
+				"Model	Model"
+			],
+			[
+				"Cha",
+				"Character	Character"
+			],
+			[
+				"_e",
+				"_equippedWeapon	Weapon"
+			],
+			[
+				"con",
+				"continue	continue"
+			],
+			[
+				"active",
+				"_activeSkills	List<Skill>"
+			],
+			[
+				"Eq",
+				"EquippedWeapon	Weapon { get; }"
+			],
+			[
+				"Editor",
+				"EditorGUILayout	EditorGUILayout"
+			],
+			[
+				"Begin",
+				"BeginToggleGroup(string label, bool toggle)	bool"
+			],
+			[
+				"Height",
+				"Height(float height)	GUILayoutOption"
+			],
+			[
+				"th",
+				"throttle_position	statement"
+			],
+			[
+				"Qt",
+				"QtCore	import"
+			],
+			[
+				"whe",
+				"wheel_rotation_rate	param"
+			],
+			[
+				"wh",
+				"wheel_mass	statement"
+			],
+			[
+				"whee",
+				"wheel_radius	statement"
+			],
+			[
+				"ang",
+				"angular_acceleration	statement"
+			],
+			[
+				"w",
+				"wheel_inertia	function"
+			],
+			[
+				"eng",
+				"engine_torque"
+			],
+			[
+				"trac",
+				"traction_force	statement"
+			],
+			[
+				"tra",
+				"traction_torque	statement"
+			],
+			[
+				"slip",
+				"slip_ratio	statement"
+			],
+			[
+				"axle",
+				"axle_acc	statement"
+			],
+			[
+				"Start",
+				"StartButton	class"
+			],
+			[
+				"stat",
+				"staticFriction	statement"
+			],
+			[
+				"gear",
+				"gear_ratio	function"
+			],
+			[
+				"r",
+				"rpm	function"
+			],
+			[
+				"e",
+				"transmission_efficiency"
+			],
+			[
+				"t",
+				"total_torque	function"
+			],
+			[
+				"weight",
+				"weight_transfer	function"
+			],
+			[
+				"weigh",
+				"weight_transfer	function"
+			],
+			[
+				"air",
+				"air_resistance_force	function"
+			],
+			[
+				"inter",
+				"internal_resistance_force	function"
+			],
+			[
+				"en",
+				"engine_force	function"
+			],
+			[
+				"class",
+				"class	Paul's Class"
+			],
+			[
+				"def",
+				"def	Paul's Method"
+			],
+			[
+				"max",
+				"max_force"
+			],
+			[
+				"dr",
+				"drive_torque	statement"
+			],
+			[
+				"angl",
+				"angular_velocity	param"
+			],
+			[
+				"weih",
+				"weight_rear	statement"
+			],
+			[
+				"_t",
+				"_traction_force	statement"
+			],
+			[
+				"rpm",
+				"rpm_to_wheel_velocity	function"
+			],
+			[
+				"diff",
+				"differential_ratio	statement"
+			],
+			[
+				"tract",
+				"traction_force	function"
+			],
+			[
+				"Invne",
+				"InventoryItem	InventoryItem"
+			],
+			[
+				"Asset",
+				"AssetDatabase	AssetDatabase"
+			],
+			[
+				"_items",
+				"_itemsList	List<List<ModelItem>>"
+			],
+			[
+				"_item",
+				"_itemsList	List<List<ModelItem>>"
+			],
+			[
+				"Test",
+				"TestModel	TestModel"
+			],
+			[
+				"Inve",
+				"InventoryView	InventoryView"
+			],
+			[
+				"Game",
+				"GameObject	GameObject"
+			],
+			[
+				"Play",
+				"PlayerCharacter	PlayerCharacter"
+			],
+			[
+				"To",
+				"PercentToNextLevel	float { get; }"
+			],
+			[
+				"Uni",
+				"UnityEngine	UnityEngine"
+			],
+			[
+				"Pl",
+				"PlayerMenu	PlayerMenu"
+			],
+			[
+				"T",
+				"PlayerTakesHit()	void"
+			],
+			[
+				"Chrac",
+				"Character	Character"
+			],
+			[
+				"enem",
+				"enemy	Character"
+			],
+			[
+				"_a",
+				"_alertnessRange	float"
+			],
+			[
+				"Is",
+				"IsEnemy(string tag)	bool"
+			],
+			[
+				"Li",
+				"List<	List<"
+			],
+			[
+				"Base",
+				"BaseState	BaseState"
+			],
+			[
+				"aler",
+				"_alertState	AlertState"
+			],
+			[
+				"C",
+				"Count	int { get; }"
+			],
+			[
+				"and",
+				"angularSpeed	float { get; set; }"
+			],
+			[
+				"sta",
+				"_states	Dictionary<string, BaseState>"
+			],
+			[
+				"Eve",
+				"EventSystems	EventSystems"
+			],
+			[
+				"Ge",
+				"GetComponent(Type type)	Component"
+			],
+			[
+				"Ba",
+				"base	base"
+			],
+			[
+				"sight",
+				"_sightRange	float"
+			],
+			[
+				"sigh",
+				"_sightAngle	float"
+			],
+			[
+				"Vector",
+				"Vector3	Vector3"
+			],
+			[
+				"Vec",
+				"Vector3()	Vector3()"
+			],
+			[
+				"GUILa",
+				"GUILayoutOption	GUILayoutOption"
+			],
+			[
+				"letter",
+				"lettersGuessed	param"
+			],
+			[
+				"asc",
+				"ascii_lowercase	statement"
+			],
+			[
+				"secret",
+				"secretWord	param"
+			],
+			[
+				"Trigger",
+				"ResetTrigger(string name)	void"
+			]
+		]
+	},
+	"buffers":
+	[
+		{
+			"file": "/C/PROJECTS/ShadowhunterTheGame/Assets/Scripts/Framework/PlayerController.cs",
+			"settings":
+			{
+				"buffer_size": 5290,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "/C/PROJECTS/ShadowhunterTheGame/Assets/Scripts/View/PlayerMenu.cs",
+			"settings":
+			{
+				"buffer_size": 3063,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "/C/PROJECTS/ShadowhunterTheGame/Assets/Scripts/View/SkillView.cs",
+			"settings":
+			{
+				"buffer_size": 1080,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "/C/PROJECTS/ShadowhunterTheGame/Assets/Scripts/Inventory/Item/InventoryItem.cs",
+			"settings":
+			{
+				"buffer_size": 986,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "/C/PROJECTS/ShadowhunterTheGame/Assets/Scripts/Character/Player.cs",
+			"settings":
+			{
+				"buffer_size": 10369,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "/C/PROJECTS/ShadowhunterTheGame/Assets/Scripts/Character/Stats.cs",
+			"settings":
+			{
+				"buffer_size": 7156,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "/C/PROJECTS/ShadowhunterTheGame/Assets/Scripts/View/CharacterView.cs",
+			"settings":
+			{
+				"buffer_size": 3450,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "/C/PROJECTS/ShadowhunterTheGame/Assets/Scripts/Character/Skill/SkillDatabase.cs",
+			"settings":
+			{
+				"buffer_size": 816,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "/C/PROJECTS/ShadowhunterTheGame/Assets/Scripts/Character/Skill/Skill.cs",
+			"settings":
+			{
+				"buffer_size": 1474,
+				"line_ending": "Windows"
+			}
+		}
+	],
+	"build_system": "",
+	"build_system_choices":
+	[
+	],
+	"build_varint": "",
+	"command_palette":
+	{
+		"height": 368.0,
+		"last_filter": "",
+		"selected_items":
+		[
+			[
+				"re",
+				"Package Control: Remove Package"
+			],
+			[
+				"in",
+				"Package Control: Install Package"
+			],
+			[
+				"inst",
+				"Package Control: Install Package"
+			],
+			[
+				"r",
+				"Package Control: Remove Package"
+			],
+			[
+				"insta",
+				"Package Control: Install Package"
+			],
+			[
+				"omni",
+				"OmniSharpSublime: Show Info Panel"
+			],
+			[
+				"",
+				"OmniSharpSublime: Reload Solution"
+			],
+			[
+				"Omni",
+				"OmniSharpSublime: Fix Code Issue"
+			],
+			[
+				"remove",
+				"Package Control: Remove Package"
+			],
+			[
+				"repl",
+				"SublimeREPL: Python"
+			],
+			[
+				"remov",
+				"Package Control: Remove Package"
+			],
+			[
+				"install",
+				"Package Control: Install Package"
+			],
+			[
+				"ins",
+				"Package Control: Install Package"
+			],
+			[
+				"build",
+				"Build With: mayaplugincpp"
+			],
+			[
+				"ana",
+				"Anaconda: Autoformat PEP8 Errors"
+			],
+			[
+				"remo",
+				"Package Control: Remove Package"
+			],
+			[
+				"docs",
+				"AutoDocstring: All"
+			],
+			[
+				"ints",
+				"Indentation: Convert to Spaces"
+			],
+			[
+				"Package Control: ",
+				"Package Control: Remove Package"
+			]
+		],
+		"width": 368.0
+	},
+	"console":
+	{
+		"height": 288.0,
+		"history":
+		[
+			"import win32structures",
+			"from pywinauto import application",
+			"findwindow(title = \"Untitled - Notepad\", class = \"Notepad\")",
+			"window = findwindow(title = \"Untitled - Notepad\", class = \"Notepad\")",
+			"import pywinauto",
+			"from pywinauto import application",
+			"import pywinauto",
+			"print(sys.path)",
+			"print sys.path",
+			"import sys",
+			"print(cpplint)",
+			"dir(cpplint)",
+			"import cpplint",
+			"print(cpplint)",
+			"import cpplint",
+			"where cpplint",
+			"dir(platform)",
+			"platform.python_version()",
+			"import platform",
+			"print(version)",
+			"print version",
+			"version",
+			"C/PROJECTS/python/get_pip.py",
+			"#!/usr/bin/env python",
+			"import pip"
+		]
+	},
+	"distraction_free":
+	{
+		"menu_visible": true,
+		"show_minimap": false,
+		"show_open_files": false,
+		"show_tabs": false,
+		"side_bar_visible": false,
+		"status_bar_visible": false
+	},
+	"expanded_folders":
+	[
+		"/C/PROJECTS/ShadowhunterTheGame/Assets/Scripts/Inventory/Item",
+		"/C/PROJECTS/ShadowhunterTheGame/Assets/Scripts/View"
+	],
+	"file_history":
+	[
+		"/C/PROJECTS/ShadowhunterTheGame/Assets/Scripts/Character/Player.cs",
+		"/C/PROJECTS/ShadowhunterTheGame/Assets/Scripts/Character/Stats.cs",
+		"/C/PROJECTS/ShadowhunterTheGame/Assets/Scripts/View/SkillViewItem.cs",
+		"/C/PROJECTS/ShadowhunterTheGame/Assets/Scripts/Inventory/Inventory.cs",
+		"/C/PROJECTS/ShadowhunterTheGame/Assets/Scripts/Inventory/InventoryEditorMenu.cs",
+		"/C/PROJECTS/ShadowhunterTheGame/Assets/Scripts/Inventory/Item/ItemDatabase.cs",
+		"/C/PROJECTS/ShadowhunterTheGame/Assets/Scripts/Character/StatsEditor.cs",
+		"/C/PROJECTS/ShadowhunterTheGame/Assets/Scripts/Character/Character.cs",
+		"/C/PROJECTS/ShadowhunterTheGame/Assets/Scripts/Inventory/Item/Usable.cs",
+		"/C/PROJECTS/ShadowhunterTheGame/Assets/Scripts/Character/Skill/Skill.cs",
+		"/C/PROJECTS/ShadowhunterTheGame/Assets/Scripts/View/SkillView.cs",
+		"/C/PROJECTS/ShadowhunterTheGame/Assets/Scripts/Loot/Loot.cs",
+		"/C/PROJECTS/ShadowhunterTheGame/Assets/Scripts/Inventory/Item/Magic.cs",
+		"/C/PROJECTS/ShadowhunterTheGame/Assets/Scripts/View/PlayerMenu.cs",
+		"/C/PROJECTS/ShadowhunterTheGame/Assets/Scripts/Inventory/SlotSystem/Slot.cs",
+		"/C/PROJECTS/ShadowhunterTheGame/Assets/Scripts/Framework/MainController.cs",
+		"/C/PROJECTS/ShadowhunterTheGame/Assets/Scripts/Inventory/SlotSystem/SlottableItem.cs",
+		"/C/PROJECTS/ShadowhunterTheGame/Assets/Scripts/Inventory/View/InventoryViewItem.cs",
+		"/C/PROJECTS/ShadowhunterTheGame/Assets/Scripts/Inventory/View/InventorySlot.cs",
+		"/C/PROJECTS/ShadowhunterTheGame/Assets/Scripts/Inventory/View/InventoryView.cs",
+		"/C/PROJECTS/ShadowhunterTheGame/Assets/Scripts/Framework/PlayerController.cs",
+		"/C/PROJECTS/ShadowhunterTheGame/Assets/Scripts/Character/Skill/SkillEditorMenu.cs",
+		"/C/PROJECTS/ShadowhunterTheGame/Assets/Scripts/Character/Skill/SkillDatabase.cs",
+		"/C/PROJECTS/ShadowhunterTheGame/Assets/Scripts/Inventory/Item/Weapon.cs",
+		"/C/PROJECTS/ShadowhunterTheGame/Assets/Scripts/Inventory/Item/InventoryItem.cs",
+		"/C/PROJECTS/ShadowhunterTheGame/Assets/Scripts/Inventory/Item/Generic.cs",
+		"/C/PROJECTS/ShadowhunterTheGame/Assets/Scripts/View/SkillSlot.cs",
+		"/E/GofferAutoRigg/ClassBase.py",
+		"/C/PROJECTS/ShadowhunterTheGame/Assets/Scripts/Inventory/SlotSystem/SlotView.cs",
+		"/C/PROJECTS/ShadowhunterTheGame/Assets/Scripts/Character/CharacterEditorMenu.cs",
+		"/C/PROJECTS/ShadowhunterTheGame/Assets/Scripts/Character/State/IdleState.cs",
+		"/C/PROJECTS/ShadowhunterTheGame/Assets/Scripts/Character/State/MoveState.cs",
+		"/C/PROJECTS/ShadowhunterTheGame/Assets/Scripts/Character/State/BaseState.cs",
+		"/C/PROJECTS/ShadowhunterTheGame/Assets/Scripts/Character/State/AttackState.cs",
+		"/C/PROJECTS/ShadowhunterTheGame/Assets/Scripts/Character/State/AlertState.cs",
+		"/C/PROJECTS/ShadowhunterTheGame/Assets/Scripts/Framework/EventManager/Events.cs",
+		"/C/PROJECTS/ShadowhunterTheGame/Assets/Scripts/View/CharacterView.cs",
+		"/C/PROJECTS/ShadowhunterTheGame/Assets/Scripts/View/GameView.cs",
+		"/C/PROJECTS/ShadowhunterTheGame/Assets/Scripts/Framework/MainMenuController.cs",
+		"/C/PROJECTS/ShadowhunterTheGame/Assets/Scripts/Inventory/InventoryEditor.cs",
+		"/C/PROJECTS/ShadowhunterTheGame/Assets/Scripts/Inventory/Item/IInventoryItem.cs",
+		"/C/Users/Paul/AppData/LocalLow/PaulSchweizer/ShadowhunterTheGame/GameStates/PlayerStats.dat",
+		"/C/PROJECTS/UnityScripts/MVCItemSystem/Controller.cs",
+		"/C/PROJECTS/UnityScripts/MVCItemSystem/Model.cs",
+		"/C/Users/Paul/AppData/Roaming/Sublime Text 3/Packages/User/unity.tmTheme",
+		"/C/PROJECTS/ShadowhunterTheGame/Assets/Scripts/Character/State/ChaseState.cs",
+		"/C/PROJECTS/ShadowhunterTheGame/Assets/Scripts/Character/State/StunnedState.cs",
+		"/C/PROJECTS/ShadowhunterTheGame/Assets/Scripts/Framework/CameraRig.cs",
+		"/C/PROJECTS/ShadowhunterTheGame/Assets/Scripts/Character/State/DyingState.cs",
+		"/C/PROJECTS/ShadowhunterTheGame/Assets/Scripts/Character/PlayerCharacter.cs",
+		"/C/PROJECTS/ShadowhunterTheGame/ShadowhunterTheGame.sublime-project",
+		"/c/PROJECTS/ShadowhunterTheGame/Assets/Scripts/View/CharacterView.cs",
+		"/c/PROJECTS/ShadowhunterTheGame/Assets/Scripts/Framework/EventManager/Events.cs",
+		"/c/PROJECTS/ShadowhunterTheGame/Assets/Scripts/View/SkillView.cs",
+		"/c/PROJECTS/ShadowhunterTheGame/Assets/Scripts/Player/PlayerCharacter.cs",
+		"/c/PROJECTS/ShadowhunterTheGame/Assets/Scripts/Framework/PlayerController.cs",
+		"/c/PROJECTS/ShadowhunterTheGame/Assets/Scripts/View/PlayerMenu.cs",
+		"/c/PROJECTS/ShadowhunterTheGame/Assets/Scripts/Inventory/View/InventoryView.cs",
+		"/C/PROJECTS/ShadowhunterTheGame/Assets/Scripts/Player/PlayerCharacter.cs",
+		"/C/PROJECTS/ShadowhunterTheGame/Assets/Scripts/Character/CharacterDefinition.cs",
+		"/C/PROJECTS/ShadowhunterTheGame/Assets/Scripts/Framework/EventManager/EventManager.cs",
+		"/C/PROJECTS/ShadowhunterTheGame/Assets/Scripts/View/HudView.cs",
+		"/C/PROJECTS/ShadowhunterTheGame/Assets/Scripts/Player/PlayerMenu.cs",
+		"/C/PROJECTS/ShadowhunterTheGame/Assets/Scripts/Character/Skill/SkillView.cs",
+		"/C/PROJECTS/ShadowhunterTheGame/Assets/Scripts/Character/CharacterView.cs",
+		"/C/Users/Paul/AppData/Roaming/Sublime Text 3/Packages/User/Preferences.sublime-settings",
+		"/C/PROJECTS/UnityScripts/MVCItemSystem/ModelItem.cs",
+		"/C/PROJECTS/ShadowhunterTheGame/Assets/Scripts/GUI/MVCItemSystem/Controller.cs",
+		"/c/PROJECTS/ShadowhunterTheGame/Assets/Scripts/GUI/JsonDatabase/JsonDatabase.cs",
+		"/C/PROJECTS/ShadowhunterTheGame/Assets/Scripts/GUI/SlotSystem/SlottableItem.cs",
+		"/C/PROJECTS/ShadowhunterTheGame/Assets/Scripts/GUI/JsonDatabase/JsonDatabase.cs",
+		"/C/Users/Paul/AppData/Roaming/Sublime Text 3/Packages/User/ApplySyntax.sublime-settings",
+		"/C/Users/Paul/AppData/Roaming/Sublime Text 3/Packages/ApplySyntax/ApplySyntax.sublime-settings",
+		"/C/Users/Paul/AppData/Roaming/Sublime Text 3/Packages/Unity3D/Neues Textdokument.txt",
+		"/C/Users/Paul/AppData/Roaming/Sublime Text 3/Packages/User/Base File.sublime-settings",
+		"/C/Users/Paul/AppData/Roaming/Sublime Text 3/Packages/DocBlockr/Base File.sublime-settings",
+		"/C/Users/Paul/AppData/Roaming/Sublime Text 3/Packages/docblockr_python/DocblockrPython.sublime-settings",
+		"/C/PROJECTS/python/maya/rigganator/src/python/olympus/default.py",
+		"/C/PROJECTS/ShadowhunterTheGame/Assets/Scripts/Character/__del__AttributesEditor.cs",
+		"/C/PROJECTS/ShadowhunterTheGame/Assets/Scripts/Character/__del__Attributes.cs",
+		"/C/PROJECTS/ShadowhunterTheGame/Assets/Scripts/Inventory/InventoryMenu.cs",
+		"/C/PROJECTS/ShadowhunterTheGame/Assets/Scripts/Inventory/__del__ItemJsonDatabase.cs",
+		"/C/PROJECTS/ShadowhunterTheGame/Assets/Scripts/Inventory/__del__InventoryControllerEditor.cs",
+		"/C/PROJECTS/ShadowhunterTheGame/Assets/Scripts/Inventory/__del__InventoryController.cs",
+		"/C/PROJECTS/ShadowhunterTheGame/Assets/Scripts/GUI/SlotSystem/SlotView.cs",
+		"/C/PROJECTS/ShadowhunterTheGame/Assets/Scripts/Inventory/InventoryController.cs",
+		"/C/PROJECTS/ShadowhunterTheGame/Assets/Scripts/Player/__del__GameController.cs",
+		"/C/PROJECTS/ShadowhunterTheGame/Assets/Scripts/Inventory/InventoryControllerEditor.cs",
+		"/C/PROJECTS/ShadowhunterTheGame/Assets/Scripts/GUI/MVCItemSystem/ControllerEditor.cs",
+		"/C/PROJECTS/ShadowhunterTheGame/Assets/Scripts/Inventory/InventoryModel.cs",
+		"/C/PROJECTS/ShadowhunterTheGame/Assets/Scripts/GUI/MVCItemSystem/Model.cs",
+		"/C/PROJECTS/ShadowhunterTheGame/Assets/Scripts/GUI/MVCItemSystem/ModelIndex.cs",
+		"/C/PROJECTS/ShadowhunterTheGame/Assets/Scripts/GUI/MVCItemSystem/ModelItemInt.cs",
+		"/C/PROJECTS/ShadowhunterTheGame/Assets/Scripts/GUI/MVCItemSystem/ModelItem.cs",
+		"/C/PROJECTS/ShadowhunterTheGame/Assets/Scripts/GUI/SlotSystem/Slot.cs",
+		"/C/PROJECTS/ShadowhunterTheGame/Assets/Scripts/Framework/MenuController.cs",
+		"/C/PROJECTS/ShadowhunterTheGame/Assets/Scripts/Framework/EventManager/EventsTrigger.cs",
+		"/C/PROJECTS/ShadowhunterTheGame/Assets/Scripts/Framework/GameController.cs",
+		"/C/PROJECTS/ShadowhunterTheGame/Assets/Scripts/Player/EventManager/PlayerEvents.cs",
+		"/C/PROJECTS/ShadowhunterTheGame/Assets/Scripts/Player/EventManager/PlayerEventsTrigger.cs",
+		"/C/PROJECTS/ShadowhunterTheGame/Assets/Scripts/Player/EventManager/EventManager.cs",
+		"/C/Users/Paul/AppData/Local/Temp/Temp1_Template.zip/Template/Assets/Scripts/GameController.cs",
+		"/C/Users/Paul/AppData/Local/Temp/Temp1_Template.zip/Template/Assets/Scripts/AgentController.cs",
+		"/C/Users/Paul/AppData/Local/Temp/Temp1_Template.zip/Template/Assets/Scripts/MainController.cs",
+		"/C/Users/Paul/AppData/Local/Temp/Temp1_Template.zip/Template/Assets/Scripts/MenuController.cs",
+		"/C/PROJECTS/ShadowhunterTheGame/Assets/Scripts/Player/GameController.cs",
+		"/C/PROJECTS/ShadowhunterTheGame/Assets/Scripts/Character/Skill/SkillMenu.cs",
+		"/C/PROJECTS/ShadowhunterTheGame/Assets/Scripts/Character/CharacterDefinitionEditor.cs",
+		"/C/PROJECTS/ShadowhunterTheGame/Assets/Scripts/Player/CharacterView.cs",
+		"/C/PROJECTS/ShadowhunterTheGame/Assets/Scripts/Character/AttributesEditor.cs",
+		"/C/PROJECTS/ShadowhunterTheGame/Assets/Scripts/Character/CharacterMenu.cs",
+		"/C/PROJECTS/ShadowhunterTheGame/Assets/Scripts/Character/Attributes.cs",
+		"/C/PROJECTS/ShadowhunterTheGame/Assets/Scripts/Character/Attack.cs",
+		"/C/PROJECTS/MayaGameEngine/testracegame.py",
+		"/C/PROJECTS/ShadowhunterTheGame/Assets/Scripts/GUI/MVCItemSystem/IView.cs",
+		"/C/PROJECTS/ShadowhunterTheGame/Assets/Content/Database/WeaponItems.json",
+		"/C/PROJECTS/ShadowhunterTheGame/Assets/Scripts/Inventory/ItemJsonDatabase.cs",
+		"/C/PROJECTS/ShadowhunterTheGame/Assets/Scripts/EditorExtensions/MenuItems",
+		"/C/PROJECTS/MayaGameEngine/gameengine.py",
+		"/C/PROJECTS/MayaGameEngine/vehicle.py",
+		"/C/PROJECTS/MayaGameEngine/testracegame4.py",
+		"/C/PROJECTS/MayaGameEngine/testracegame2.py",
+		"/C/PROJECTS/MayaGameEngine/testracegame3.py",
+		"/C/PROJECTS/VehiclePhysics/Assets/Vehicle Physics Toolkit v1.4/Scripts/AI/AICarScript.js",
+		"/C/PROJECTS/MayaGameEngine/racegame.py",
+		"/C/PROJECTS/VehiclePhysics/Assets/Vehicle Physics Toolkit v1.4/Scripts/AI/AICarDetector.js",
+		"/C/Users/Paul/Downloads/ball_physics.cpp",
+		"/C/PROJECTS/MayaGameEngine/README.md"
+	],
+	"find":
+	{
+		"height": 55.0
+	},
+	"find_in_files":
+	{
+		"height": 92.0,
+		"where_history":
+		[
+			"C:\\PROJECTS\\python\\maya\\rigganator\\src\\python\\rigganator\\rig",
+			"C:\\PROJECTS\\python\\maya\\rigganator\\io",
+			"C:\\PROJECTS\\python\\maya\\rigganator\\util",
+			"C:\\PROJECTS\\python\\maya\\rigganator\\mod\\rig"
+		]
+	},
+	"find_state":
+	{
+		"case_sensitive": false,
+		"find_history":
+		[
+			"_activeSkills",
+			"active",
+			"_activeSkills",
+			"_showMindSecondary",
+			"_lifeSlider",
+			"double",
+			"_cooldown_time",
+			"item",
+			"_item",
+			"InventoryItem",
+			"_skillDatabase",
+			"_mainController",
+			"UnityEditor",
+			"_fadingTime",
+			"UpdateSceneReset",
+			"UpdateSceneRun",
+			"static",
+			"itemQuantities",
+			"_learnedSkills",
+			"learnedSkills",
+			"skill",
+			"_skills",
+			"IInventoryItem",
+			"Name",
+			"IInventoryItem",
+			"public",
+			"default",
+			"asset",
+			"Skill",
+			"= _",
+			"// _",
+			",",
+			" ",
+			"Stats",
+			"_",
+			"public",
+			"SerializableStats",
+			"Serial",
+			"Serialize",
+			"InventoryItem",
+			"override",
+			"InventoryItem",
+			" _",
+			"List<Skill> ",
+			"Weapon ",
+			"float ",
+			"int ",
+			" _",
+			"<Skill> ",
+			"float ",
+			"float",
+			"int ",
+			"[SerializeField]",
+			"int _",
+			"[SerializeField]",
+			"SerializeMe",
+			"    [SerializeField]",
+			"_stats",
+			"_inventory",
+			"IsDead",
+			"Box",
+			"ffffff",
+			"warning",
+			"gutter",
+			"FFFFFF",
+			"_activeSkills",
+			"_skills",
+			"OnChange",
+			"_skillView",
+			"CharacterDefinition",
+			"Definition",
+			"_character",
+			"CharacterDefinition",
+			"characterDefinition",
+			"CharacterDefinition",
+			"PlayerCharacter",
+			"",
+			"();\n",
+			"",
+			"///////////////////////////////////////////////////////////////////////////",
+			"skill",
+			"learn",
+			"Level",
+			"playerMenu",
+			"PlayerMenu",
+			"playerMenu",
+			"_playerMenu",
+			"protected",
+			"_playerControllerPrefab",
+			"InstantiatePlayerController",
+			"_playerControllerPrefab",
+			"ModelItem",
+			"3D8E91",
+			"abde6d",
+			"b4b7ad",
+			"_playerCharacter",
+			"._player.",
+			"_player",
+			"controller",
+			"_player",
+			"_mainController",
+			"Method",
+			"_menuController",
+			"menuController",
+			"_mainController",
+			"Event",
+			"Player",
+			"_gameController",
+			"GameController",
+			"_gameController",
+			"currentSceneName",
+			".ToString()",
+			";",
+			"",
+			"_availableAttributePoints",
+			"PlayerCharacter._player",
+			"damage",
+			"_currentL",
+			"_currentLife",
+			"Life",
+			"takeDama",
+			"Attributes",
+			"Attr",
+			"_a",
+			"Attributes",
+			"Attr",
+			"_equippedWeapon",
+			"Attributes"
+		],
+		"highlight": true,
+		"in_selection": false,
+		"preserve_case": false,
+		"regex": false,
+		"replace_history":
+		[
+		],
+		"reverse": false,
+		"show_context": true,
+		"use_buffer2": true,
+		"whole_word": false,
+		"wrap": true
+	},
+	"groups":
+	[
+		{
+			"selected": 6,
+			"sheets":
+			[
+				{
+					"buffer": 0,
+					"file": "/C/PROJECTS/ShadowhunterTheGame/Assets/Scripts/Framework/PlayerController.cs",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 5290,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								2854,
+								2854
+							]
+						],
+						"settings":
+						{
+							"apply_syntax_touched": true,
+							"oops":
+							{
+								"4957,4972": "Method 'RegenerateMagic' can be made static."
+							},
+							"syntax": "Packages/Unity3D/UnityC#.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 767.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 4,
+					"type": "text"
+				},
+				{
+					"buffer": 1,
+					"file": "/C/PROJECTS/ShadowhunterTheGame/Assets/Scripts/View/PlayerMenu.cs",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 3063,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								2837,
+								2837
+							]
+						],
+						"settings":
+						{
+							"apply_syntax_touched": true,
+							"oops":
+							{
+								"1568,1587": "Method 'ClickedAttackButton' can be made static.",
+								"1725,1743": "Method 'ClickedSkillButton' can be made static."
+							},
+							"syntax": "Packages/Unity3D/UnityC#.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 715.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 5,
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"file": "/C/PROJECTS/ShadowhunterTheGame/Assets/Scripts/View/SkillView.cs",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1080,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								809,
+								809
+							]
+						],
+						"settings":
+						{
+							"apply_syntax_touched": true,
+							"oops":
+							{
+								"1000,1006": "Cannot convert from UnityEngine.Texture to UnityEngine.Sprite"
+							},
+							"syntax": "Packages/Unity3D/UnityC#.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 6,
+					"type": "text"
+				},
+				{
+					"buffer": 3,
+					"file": "/C/PROJECTS/ShadowhunterTheGame/Assets/Scripts/Inventory/Item/InventoryItem.cs",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 986,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								789,
+								789
+							]
+						],
+						"settings":
+						{
+							"apply_syntax_touched": true,
+							"syntax": "Packages/Unity3D/UnityC#.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 3,
+					"type": "text"
+				},
+				{
+					"buffer": 4,
+					"file": "/C/PROJECTS/ShadowhunterTheGame/Assets/Scripts/Character/Player.cs",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 10369,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								7129,
+								7129
+							]
+						],
+						"settings":
+						{
+							"apply_syntax_touched": true,
+							"oops":
+							{
+								"6774,6775": "Invocation error: AmbiguousMatch",
+								"6955,6956": "Invocation error: AmbiguousMatch"
+							},
+							"syntax": "Packages/Unity3D/UnityC#.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 2604.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 2,
+					"type": "text"
+				},
+				{
+					"buffer": 5,
+					"file": "/C/PROJECTS/ShadowhunterTheGame/Assets/Scripts/Character/Stats.cs",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 7156,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								7010,
+								7010
+							]
+						],
+						"settings":
+						{
+							"apply_syntax_touched": true,
+							"syntax": "Packages/Unity3D/UnityC#.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 3789.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 1,
+					"type": "text"
+				},
+				{
+					"buffer": 6,
+					"file": "/C/PROJECTS/ShadowhunterTheGame/Assets/Scripts/View/CharacterView.cs",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 3450,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								574,
+								574
+							]
+						],
+						"settings":
+						{
+							"apply_syntax_touched": true,
+							"oops":
+							{
+								"1716,1725": "Parameter can be IComparable"
+							},
+							"syntax": "Packages/Unity3D/UnityC#.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 0,
+					"type": "text"
+				},
+				{
+					"buffer": 7,
+					"file": "/C/PROJECTS/ShadowhunterTheGame/Assets/Scripts/Character/Skill/SkillDatabase.cs",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 816,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								566,
+								566
+							]
+						],
+						"settings":
+						{
+							"apply_syntax_touched": true,
+							"oops":
+							{
+								"349,365": "'InitTriggerTable' is not a known identifier",
+								"367,368": "'SkillDatabase' does not contain a definition for 'InitTriggerTable'"
+							},
+							"syntax": "Packages/Unity3D/UnityC#.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 8,
+					"type": "text"
+				},
+				{
+					"buffer": 8,
+					"file": "/C/PROJECTS/ShadowhunterTheGame/Assets/Scripts/Character/Skill/Skill.cs",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1474,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1220,
+								1233
+							]
+						],
+						"settings":
+						{
+							"apply_syntax_touched": true,
+							"syntax": "Packages/Unity3D/UnityC#.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 309.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 7,
+					"type": "text"
+				}
+			]
+		},
+		{
+			"sheets":
+			[
+			]
+		}
+	],
+	"incremental_find":
+	{
+		"height": 55.0
+	},
+	"input":
+	{
+		"height": 55.0
+	},
+	"layout":
+	{
+		"cells":
+		[
+			[
+				0,
+				0,
+				1,
+				1
+			],
+			[
+				1,
+				0,
+				2,
+				1
+			]
+		],
+		"cols":
+		[
+			0.0,
+			0.92057416268,
+			1.0
+		],
+		"rows":
+		[
+			0.0,
+			1.0
+		]
+	},
+	"menu_visible": true,
+	"output.exec":
+	{
+		"height": 86.0
+	},
+	"output.find_results":
+	{
+		"height": 0.0
+	},
+	"output.variable_get":
+	{
+		"height": 22.0
+	},
+	"pinned_build_system": "Packages/SublimeREPL/SublimeREPL-python.sublime-build",
+	"project": "maya-game-engine.sublime-project",
+	"replace":
+	{
+		"height": 50.0
+	},
+	"save_all_on_build": true,
+	"select_file":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_project":
+	{
+		"height": 500.0,
+		"last_filter": "",
+		"selected_items":
+		[
+			[
+				"",
+				"C:\\Users\\Public\\Documents\\Unity Projects\\HackNSlash\\HackNSlash.sublime-project"
+			]
+		],
+		"width": 380.0
+	},
+	"select_symbol":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"selected_group": 0,
+	"settings":
+	{
+	},
+	"show_minimap": true,
+	"show_open_files": true,
+	"show_tabs": true,
+	"side_bar_visible": true,
+	"side_bar_width": 321.0,
+	"status_bar_visible": true,
+	"template_settings":
+	{
+	}
+}

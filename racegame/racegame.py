@@ -41,7 +41,7 @@ class RaceGameUI(gameengine.GameEngineUI):
     """
 
     def __init__(self):
-        """Initialize the RaceGameUI"""
+        """Initialize the RaceGameUI."""
         super(RaceGameUI, self).__init__(RaceGameWidget())
 
         # 8. Display the elapsed Time
@@ -53,13 +53,18 @@ class RaceGameUI(gameengine.GameEngineUI):
     def on_start(self):
         """@todo documentation for on_start."""
         # Create the GameManager
-        print 'STAAAAAAART RACEGAME'
         GameManager(pm.createNode('transform', n='GameManager'))
+
+        # Create the Vehicles
+        vehicle.Vehicle('C_main_CTL',
+                        'C_steeringAxis_CTL',
+                        'C_steeringWheel_CTL',
+                        )
     # end def on_start
 
     def on_stop(self):
         """Override to create and initialize GameObjects on end."""
-        print 'ENDED RACEGAME'
+        print('ENDED RACEGAME')
     # end def on_stop
 # end class RaceGame
 
