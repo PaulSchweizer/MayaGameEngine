@@ -230,7 +230,7 @@ class GameEngineUI(base_class, form_class):
 
     def __init__(self, inner_widget=None):
         """Initialize GameEngineUI."""
-        super(GameEngineUI, self).__init__()
+        super(GameEngineUI, self).__init__(parent=qtutils.get_maya_window())
         self.setupUi(self)
 
         self.setLayout(QtGui.QHBoxLayout())

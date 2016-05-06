@@ -22,6 +22,10 @@ class Vehicle(gameobject.GameObject):
 
     def __init__(self,
                  transform,
+                 up,
+                 down,
+                 left,
+                 right,
                  front_aim,
                  body,
                  steering_axis,
@@ -44,6 +48,11 @@ class Vehicle(gameobject.GameObject):
         @param wheels An optional list of wheels that rotate
         """
         super(Vehicle, self).__init__(transform)
+        # Keys
+        self.up = up
+        self.down = down
+        self.left = left
+        self.right = right
 
         # Transforms
         self.front_aim = pm.PyNode(front_aim)
@@ -177,25 +186,25 @@ class Vehicle(gameobject.GameObject):
     def _user_input(self, delta_time):
         """@todo documentation for _user_input."""
         # Throttle up / down
-        if self.game_engine.input_manager.Key_Up[0]:
+        if getattr(self.game_engine.input_manager, self.up)[0]:
             self.throttle_position = (min(self.throttle_position + delta_time * 2, 1))
         else:
             self.throttle_position = (max(0, self.throttle_position - delta_time * 4))
         # end if
 
         # Break up / down
-        if self.game_engine.input_manager.Key_Down[0]:
+        if getattr(self.game_engine.input_manager, self.down)[0]:
             self.brake_position = (min(self.brake_position + delta_time * 2, 1))
         else:
             self.brake_position = (max(0, self.brake_position - delta_time * 4))
         # end if
 
         # Turn left / right
-        if self.game_engine.input_manager.Key_Left[0]:
+        if getattr(self.game_engine.input_manager, self.left)[0]:
             self.steering_angle = max(-self.max_steering_angle, min(self.steering_angle + delta_time * 120, self.max_steering_angle))
-        if self.game_engine.input_manager.Key_Right[0]:
+        if getattr(self.game_engine.input_manager, self.right)[0]:
             self.steering_angle = max(-self.max_steering_angle, min(self.steering_angle - delta_time * 120, self.max_steering_angle))
-        if not self.game_engine.input_manager.Key_Left[0] and not self.game_engine.input_manager.Key_Right[0]:
+        if not getattr(self.game_engine.input_manager, self.left)[0] and not getattr(self.game_engine.input_manager, self.right)[0]:
             if self.steering_angle < 1 and self.steering_angle > -1:
                 self.steering_angle = 0
             if self.steering_angle > 0:

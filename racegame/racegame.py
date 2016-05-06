@@ -3,7 +3,8 @@ import time
 from PySide import QtGui
 
 import pymel.core as pm
-from maya import mel
+import pymel.core.uitypes as pmui
+from maya import cmds
 
 from MayaGameEngine.core import qtutils
 from MayaGameEngine.core import gameengine
@@ -104,52 +105,90 @@ class RaceGameUI(gameengine.GameEngineUI):
 
     def on_start(self):
         """@todo documentation for on_start."""
-
         # Create the GameManager
         game_manager = GameManager(pm.createNode('transform', n='GameManager'))
 
+        # Load and setup the course
         course = self.inner_widget.selected_course()
         vehicles = self.inner_widget.selected_vehicles()
         pm.newFile(f=True)
         pm.importFile(course)
-
-        # Create Colliders
+        # Create boundary Colliders
         gameobject.CurveCollider('L_edge_CRV')
         gameobject.CurveCollider('R_edge_CRV')
+        gameobject.SphereCollider('sphere1')
 
-        for v, namespace in zip(vehicles, ['a', 'b']):
+        # Setup the View
+        pm.mel.eval('setNamedPanelLayout("Four View")')
+
+        # Import and setup the vehicles
+        for v, namespace in zip(vehicles, ['Player1', 'Player2']):
             pm.importFile(v, namespace=namespace)
-            pm.select('C_playerCamera_CAM')
-            mel.eval('lookThroughModelPanelClipped C_playerCamera_CAM modelPanel4 0.001 1000')
-            pm.geometryConstraint('C_groundDrive_PLY', 'C_main_CTL')
-            pm.geometryConstraint('C_groundDrive_PLY', 'C_front_CTL')
-            pm.delete(pm.parentConstraint('StartLocation', 'C_main_CTL'))
-            pm.delete(pm.parentConstraint('StartLocation', 'C_front_CTL'))
+            panel = cmds.getPanel(withLabel='Top View')
+            if namespace == 'Player2':
+                panel = cmds.getPanel(withLabel='Persp View')
+            # end if
+            pm.modelPanel(panel, cam='%s:C_playerCamera_CAM' % namespace, e=True)
+            self.set_panel_properties('%s:C_playerCamera_CAM' % namespace)
 
-            v = vehicle.Vehicle(transform='C_main_CTL',
-                                front_aim='C_front_CTL',
-                                body='C_body_CTL',
-                                steering_axis='C_steeringAxis_CTL',
-                                steering_wheel='C_steeringWheel_CTL',
-                                ui_pointer='C_pointer_CTL',
-                                ui_health='C_health_CTL',
-                                ui_countdown=['C_3_PLY', 'C_2_PLY', 'C_1_PLY', 'C_go_PLY'],
-                                wheels=['L_frontWheel_CTL', 'R_frontWheel_CTL',
-                                          'L_rearWheel_CTL', 'R_rearWheel_CTL'],
+            pm.geometryConstraint('C_groundDrive_PLY', '%s:C_main_CTL' % namespace)
+            pm.geometryConstraint('C_groundDrive_PLY', '%s:C_front_CTL' % namespace)
+            pm.delete(pm.parentConstraint('StartLocation', '%s:C_main_CTL' % namespace))
+            pm.delete(pm.parentConstraint('StartLocation', '%s:C_front_CTL' % namespace))
+
+            v = vehicle.Vehicle(transform='%s:C_main_CTL' % namespace,
+                                up='Key_Up',
+                                down='Key_Down',
+                                left='Key_Left',
+                                right='Key_Right',
+                                front_aim='%s:C_front_CTL' % namespace,
+                                body='%s:C_body_CTL' % namespace,
+                                steering_axis='%s:C_steeringAxis_CTL' % namespace,
+                                steering_wheel='%s:C_steeringWheel_CTL' % namespace,
+                                ui_pointer='%s:C_pointer_CTL' % namespace,
+                                ui_health='%s:C_health_CTL' % namespace,
+                                ui_countdown=['%s:C_3_PLY' % namespace,
+                                              '%s:C_2_PLY' % namespace,
+                                              '%s:C_1_PLY' % namespace,
+                                              '%s:C_go_PLY' % namespace],
+                                wheels=['%s:L_frontWheel_CTL' % namespace,
+                                        '%s:R_frontWheel_CTL' % namespace,
+                                        '%s:L_rearWheel_CTL' % namespace,
+                                        '%s:R_rearWheel_CTL' % namespace],
                                 track_curve='C_center_CRVShape',
-                                collider=gameobject.SphereCollider('C_Collider_COL'),
-                                fire=gameobject.Particle('C_fire_PAR', particle_shape='C_fire_PARShape'))
+                                collider=gameobject.SphereCollider('%s:C_Collider_COL' % namespace),
+                                fire=gameobject.Particle('%s:C_fire_PAR' % namespace,
+                                                         particle_shape='%s:C_fire_PARShape' % namespace))
+            if namespace == 'Player2':
+                v.up = 'Key_W'
+                v.down = 'Key_S'
+                v.left = 'Key_A'
+                v.right = 'Key_D'
+            # end if
             game_manager.vehicles.append(v)
             pm.refresh()
         # end for
-
-        # TODO MOdifty the view properly
-        # modelEditor -e -locators false modelPanel4;
-        pm.mel.eval('displayStyle -textured')
-
-        gameobject.SphereCollider('sphere1')
-
     # end def on_start
+
+    def set_panel_properties(self, camera):
+        """@todo documentation for set_panel_properties."""
+        modelPanelList = []
+        modelEditorList = pm.lsUI(editors=True)
+        for myModelPanel in modelEditorList:
+            if myModelPanel.find('modelPanel') != -1:
+                modelPanelList.append(myModelPanel)
+            # end if
+        # end for
+        for modelPanel in modelPanelList:
+            if pmui.ModelEditor(modelPanel).getCamera() == camera:
+                pmui.ModelEditor(modelPanel).setDisplayTextures(True)
+                pmui.ModelEditor(modelPanel).setRendererName('base_OpenGL_Renderer')
+                pmui.ModelEditor(modelPanel).setLocators(False)
+                pmui.ModelEditor(modelPanel).setCameras(False)
+                pmui.ModelEditor(modelPanel).setDeformers(False)
+            # end if
+        # end for
+    # end def set_panel_properties
 
     def on_stop(self):
         """Override to create and initialize GameObjects on end."""
