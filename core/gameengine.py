@@ -45,6 +45,9 @@ class GameEngine(object):
             ## A list of all registered game objects
             self.game_objects = list()
 
+            ## A list of colliders
+            self.colliders = list()
+
             ## Manage the user inputs
             self.input_manager = InputManager(self)
 
@@ -53,6 +56,8 @@ class GameEngine(object):
 
             ## Variable to pause the Game Engine
             self.paused = False
+
+            self.time_node = pm.PyNode('time1')
         # end if
     # end def __init__
 
@@ -65,6 +70,7 @@ class GameEngine(object):
     def clear_game_objects(self):
         """Clear all registered game objects."""
         self.game_objects = list() # [go for go in self.game_objects if go.dont_destroy]
+        self.colliders = list()
     # end def clear_game_objects
 
     def start(self):
@@ -122,7 +128,8 @@ class GameEngine(object):
             for game_object in [g for g in self.game_objects if g.enabled]:
                 game_object.update(delta_time)
             # end for
-
+            self.time_node.setAttr('unwarpedTime', self.time_node.getAttr('unwarpedTime') + delta_time * 24)
+            self.time_node.setAttr('outTime', self.time_node.getAttr('outTime') + delta_time * 24)
             pm.refresh(f=True)
         else:
             pm.refresh(f=True)
@@ -236,7 +243,19 @@ class GameEngineUI(base_class, form_class):
         # end if
 
         self.game_engine = GameEngine()
+
+        # Maximize
+        desktop = QtGui.QApplication.instance().desktop()
+        available_geometry = desktop.screenGeometry(QtGui.QCursor().pos())
+        self.setGeometry(available_geometry.x(), 0, available_geometry.width(), available_geometry.height())
     # end def __init__
+
+    def _on_start(self):
+        """@todo documentation for _on_start."""
+        desktop = QtGui.QApplication.instance().desktop()
+        available_geometry = desktop.screenGeometry(QtGui.QCursor().pos())
+        self.setGeometry(available_geometry.x(), 0, 100, 100)
+    # end def _on_start
 
     def on_start(self):
         """Override to create and initialize GameObjects on startup."""
@@ -291,6 +310,7 @@ class StartButton(QtGui.QPushButton):
             self.parent().stop()
             return
         # end if
+        self.parent()._on_start()
         self.parent().on_start()
         game_engine = GameEngine()
         game_engine.start()
