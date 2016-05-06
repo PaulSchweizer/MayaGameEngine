@@ -16,91 +16,275 @@ ADHESION_COEFFICIENT = 0.7
 GRAVITY = 9.81
 
 
-class Vector(object):
+class Vehicle(gameobject.GameObject):
 
-    """docstring for Vector"""
+    """The controllable Vehicle for the RaceGame."""
 
-    def __init__(self, x=0, y=0):
-        """"""
-        super(Vector, self).__init__()
-        self.x = x
-        self.y = y
+    def __init__(self,
+                 transform,
+                 front_aim,
+                 body,
+                 steering_axis,
+                 steering_wheel,
+                 track_curve,
+                 collider,
+                 ui_pointer,
+                 ui_health,
+                 fire,
+                 ui_countdown=list(),
+                 wheels=list(),
+                 overall_scale=1,
+                 max_steering_angle=40,
+                 wheel_radius=0.03,
+                 mass=1500.0,
+                 windshield_area=2.2):
+        """Initialize the Vehicle.
+
+        @param transform The main transform of the Vehicle
+        @param wheels An optional list of wheels that rotate
+        """
+        super(Vehicle, self).__init__(transform)
+
+        # Transforms
+        self.front_aim = pm.PyNode(front_aim)
+        self.body = pm.PyNode(body)
+        self.steering_axis = pm.PyNode(steering_axis)
+        self.steering_wheel = pm.PyNode(steering_wheel)
+        self.track_curve = pm.nodetypes.NurbsCurve(track_curve)
+        self.collider = collider
+        self.collider.parent = self
+        self.ui_pointer = pm.PyNode(ui_pointer)
+        self.ui_health = pm.PyNode(ui_health)
+        self.ui_countdown = [pm.PyNode(c) for c in ui_countdown]
+        self.fire = fire
+        self.fire.parent = self
+        self.wheels = [pm.PyNode(w) for w in wheels]
+        # Values
+        self.overall_scale = overall_scale
+        self.max_steering_angle = max_steering_angle
+        self.wheel_radius = wheel_radius
+        self.mass = mass
+        self.windshield_area = windshield_area
+
+        # Variables
+        self.throttle_position = 0.0
+        self.brake_position = 0.0
+        self.steering_angle = 0.0
+        self.velocity = 0.0
+        self.air_resistance_constant = (0.5 * COEFFICIENT_OF_FRICTION *
+                                        self.windshield_area * AIR_DENSITY)
+        self.external_resistance_force = 0
+        self.damage = 0
+
+        self.body_rotation = 0.0
     # end def __init__
 
-    def __str__(self):
-        """@todo documentation for __str__."""
-        return '(%s, %s)' % (self.x, self.y)
-    # end def __str__
+    @property
+    def air_resistance_force(self):
+        """The air resistance.
 
-    def __add__(self, other):
-        """@todo documentation for __add__."""
-        if isinstance(other, Vector):
-            return Vector(self.x + other.x, self.y + other.y)
+        @return A force vector in Newton
+        """
+        return -(self.air_resistance_constant * self.velocity) * self.velocity
+    # end def air_resistance_force
+
+    @property
+    def internal_resistance_force(self):
+        """The internal resistance of the wheels.
+
+        @return A force vector in Newton
+        """
+        return -(300 * self.air_resistance_constant) * self.velocity
+    # end def internal_resistance_force
+
+    def update_external_resistance_force(self, delta_time):
+        """@todo documentation for update_external_resistance_force."""
+        if not self.colliders:
+            if self.external_resistance_force < 10 and self.external_resistance_force > -10:
+                self.external_resistance_force = 0
+            if self.external_resistance_force > 0:
+                self.external_resistance_force = max(-2000, min(self.external_resistance_force - delta_time * 1000, 2000))
+            elif self.external_resistance_force < 0:
+                self.external_resistance_force = max(-2000, min(self.external_resistance_force + delta_time * 1000, 2000))
+            # end if
         # end if
-    # end def __add__
+    # end def update_external_resistance_force
 
-    def __sub__(self, other):
-        """@todo documentation for __sub__."""
-        if isinstance(other, Vector):
-            return Vector(self.x - other.x, self.y - other.y)
+    def weight_transfer(self, velocity_diff):
+        """@todo documentation for weight_transfer."""
+        value = math.sqrt(abs(velocity_diff)) * 10
+        if velocity_diff < 0:
+            value = -value
         # end if
-    # end def __add__
+        return value
+    # end def weight_transfer
 
-    def __mul__(self, other):
-        """@todo documentation for __mul__(self, other)."""
-        return Vector(self.x * other, self.y * other)
-    # end def __mul__
+    def start(self):
+        """@todo documentation for start."""
+        self.ui_health.setAttr('sx', self.damage / 100.0)
+        self.fire.particle_shape.setAttr('fireDensity', self.damage / 5)
+    # end def start
 
-    def __div__(self, other):
-        """@todo documentation for __mul__(self, other)."""
-        return Vector(self.x / other, self.y / other)
-    # end def __div__
+    def update(self, delta_time):
+        """"""
+        # Deal with user input
+        self._user_input(delta_time)
 
-    def __floordiv__(self, other):
-        """@todo documentation for __mul__(self, other)."""
-        return Vector(self.x / other, self.y / other)
-    # end def __floordiv__
+        # Update the external force
+        self.update_external_resistance_force(delta_time)
 
-    def __truediv__(self, other):
-        """@todo documentation for __mul__(self, other)."""
-        return Vector(self.x / other, self.y / other)
-    # end def __truediv__
+        # Update the velocity
+        F = ((10000.0 * (self.throttle_position - self.brake_position))
+             + self.air_resistance_force
+             + self.internal_resistance_force
+             + self.external_resistance_force
+             - 2000)
+        acceleration = F / float(self.mass)
+        prev_velocicty = self.velocity
+        self.velocity = max(0, min(self.velocity + acceleration * delta_time, 100))
 
-    def __radd__(self, other):
-        """@todo documentation for __radd__."""
-        return self.__add__(other)
-    # end def __radd__
+        # Update the rotation
+        adj = pm.datatypes.Vector(0, 0, 1) + pm.datatypes.Vector(0, 0, 1).rotateBy(0, math.radians(self.steering_angle), 0, 0)
+        angle = math.degrees(pm.datatypes.Vector.angle(pm.datatypes.Vector(0, 0, 1), adj))
+        axis = pm.datatypes.Vector.axis(pm.datatypes.Vector(0, 0, 1), adj)
+        sign = 1
+        if axis.y < 0:
+            sign = -1
+        # end if
+        self.transform.setAttr('ry', self.transform.getAttr('ry') + (angle * delta_time * sign * (self.velocity / 4.5)))
 
-    def __rsub__(self, other):
-        """@todo documentation for __rsub__."""
-        return self.__sub__(other)
-    # end def __radd__
+        # Update the translation of the car
+        p = self.position + delta_time * pm.datatypes.Vector(0, 0, self.velocity).rotateBy(self.rotation)
+        self.transform.setTranslation(p, ws=True)
 
-    def __rmul__(self, other):
-        """@todo documentation for __mul__(self, other)."""
-        return self.__mul__(other)
-    # end def __rmul__
+        front_p = pm.datatypes.Vector(p) + pm.datatypes.Vector(0, 0, 1).rotateBy(self.rotation)
+        self.front_aim.setTranslation(front_p, ws=True)
 
-    def __rdiv__(self, other):
-        """@todo documentation for __mul__(self, other)."""
-        return self.__div__(other)
-    # end def __rdiv__
+        # Update the rotation of the steering wheel
+        self.steering_wheel.setAttr('ry', self.steering_angle)
+        self.steering_axis.setAttr('ry', self.steering_angle)
 
-    def __rfloordiv__(self, other):
-        """@todo documentation for __mul__(self, other)."""
-        return self.__floordiv__(other)
-    # end def __rfloordiv__
+        # Update the wheel rotation
+        for w in self.wheels:
+            w.setAttr('rz', w.getAttr('rz') + (self.velocity / self.wheel_radius) * delta_time)
+        # end for
 
-    def __rtruediv__(self, other):
-        """@todo documentation for __mul__(self, other)."""
-        return self.__truediv__(other)
-    # end def __rtruediv__
+        # Update the weight propagation
+        self.body.setAttr('rx', self.weight_transfer(prev_velocicty - self.velocity))
+        self.ui_pointer.setAttr('ry', (self.velocity) / 0.016666666666666666 / 10)
+    # end def update
 
-    def length(self):
-        """@todo documentation for length."""
-        return math.sqrt(self.x**2 + self.y**2)
-    # end def length
-# end class Vector
+    def _user_input(self, delta_time):
+        """@todo documentation for _user_input."""
+        # Throttle up / down
+        if self.game_engine.input_manager.Key_Up[0]:
+            self.throttle_position = (min(self.throttle_position + delta_time * 2, 1))
+        else:
+            self.throttle_position = (max(0, self.throttle_position - delta_time * 4))
+        # end if
+
+        # Break up / down
+        if self.game_engine.input_manager.Key_Down[0]:
+            self.brake_position = (min(self.brake_position + delta_time * 2, 1))
+        else:
+            self.brake_position = (max(0, self.brake_position - delta_time * 4))
+        # end if
+
+        # Turn left / right
+        if self.game_engine.input_manager.Key_Left[0]:
+            self.steering_angle = max(-self.max_steering_angle, min(self.steering_angle + delta_time * 120, self.max_steering_angle))
+        if self.game_engine.input_manager.Key_Right[0]:
+            self.steering_angle = max(-self.max_steering_angle, min(self.steering_angle - delta_time * 120, self.max_steering_angle))
+        if not self.game_engine.input_manager.Key_Left[0] and not self.game_engine.input_manager.Key_Right[0]:
+            if self.steering_angle < 1 and self.steering_angle > -1:
+                self.steering_angle = 0
+            if self.steering_angle > 0:
+                self.steering_angle = max(-self.max_steering_angle, min(self.steering_angle - delta_time * 120, self.max_steering_angle))
+            elif self.steering_angle < 0:
+                self.steering_angle = max(-self.max_steering_angle, min(self.steering_angle + delta_time * 120, self.max_steering_angle))
+            # end if
+        # end if
+    # end def _user_input
+
+    def on_collide_enter(self, collider, point, amount):
+        """@todo documentation for on_collide_enter."""
+        self.transform.setTranslation(point, ws=True)
+        self.external_resistance_force -= amount * self.velocity
+        if self.velocity > 0.5 and isinstance(collider, gameobject.SphereCollider):
+            self.damage += amount
+            self.ui_health.setAttr('sx', self.damage / 100.0)
+            self.fire.particle_shape.setAttr('fireDensity', self.damage / 5.0)
+        # end if
+    # end def on_collide_enter
+
+    def on_collide(self, collider, point, amount):
+        """@todo documentation for on_collide."""
+        self.transform.setTranslation(point, ws=True)
+    # end def on_collide
+# end class Vehicle
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 class Engine(object):
@@ -150,13 +334,13 @@ class Engine(object):
 # end class Engine
 
 
-class Vehicle(gameobject.GameObject):
+class VehicleOld(gameobject.GameObject):
 
     """The controllable Vehicle for the RaceGame."""
 
     def __init__(self,
                  transform,
-                 front_axis,
+                 steering_axis,
                  steering_wheel,
                  track_curve,
                  collider,
@@ -175,12 +359,10 @@ class Vehicle(gameobject.GameObject):
         @param transform The main transform of the Vehicle
         @param wheels An optional list of wheels that rotate
         """
-        super(Vehicle, self).__init__(transform)
+        super(VehicleOld, self).__init__(transform)
 
         # transforms
-        self.transform.setTranslation([0, 0, 0])
-        self.transform.setRotation([0, 0, 0])
-        self.front_axis = pm.PyNode(front_axis)
+        self.steering_axis = pm.PyNode(steering_axis)
         self.steering_wheel = pm.PyNode(steering_wheel)
         self.track_curve = pm.nodetypes.NurbsCurve(track_curve)
         self.collider = gameobject.SphereCollider(collider)
@@ -211,7 +393,7 @@ class Vehicle(gameobject.GameObject):
         self.engine = Engine()
         self.v = pm.datatypes.Vector(0, 0, 0)
         self.rpm = 1000
-        self.acceleration = Vector(0, 0)
+        self.acceleration = pm.datatypes.Vector(0, 0, 0)
         self.wheel_angular_velocity = 0
         self.steering_angle = 0
         self.steering_radius = 0
@@ -443,7 +625,7 @@ class Vehicle(gameobject.GameObject):
         self.transform.setTranslation(p, ws=True)
         self.actual_velocity = pm.datatypes.Vector(self.transform.getAttr('t')) - before_velocity
 
-        self.front_axis.setRotation([0, self.steering_angle, 0])
+        self.steering_axis.setRotation([0, self.steering_angle, 0])
         self.steering_wheel.setRotation([0, 0, -self.steering_angle])
 
     # end def update
