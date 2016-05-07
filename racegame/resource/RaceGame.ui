@@ -128,7 +128,7 @@
               <enum>Qt::NoFocus</enum>
              </property>
              <property name="text">
-              <string>Player 1</string>
+              <string>Player1</string>
              </property>
             </widget>
            </item>
@@ -138,6 +138,9 @@
               <font>
                <pointsize>20</pointsize>
               </font>
+             </property>
+             <property name="focusPolicy">
+              <enum>Qt::NoFocus</enum>
              </property>
              <property name="iconSize">
               <size>
@@ -173,8 +176,11 @@
            </item>
            <item>
             <widget class="QLineEdit" name="player_name_b">
+             <property name="focusPolicy">
+              <enum>Qt::NoFocus</enum>
+             </property>
              <property name="text">
-              <string>Player 2</string>
+              <string>Player2</string>
              </property>
             </widget>
            </item>
@@ -184,6 +190,9 @@
               <font>
                <pointsize>20</pointsize>
               </font>
+             </property>
+             <property name="focusPolicy">
+              <enum>Qt::NoFocus</enum>
              </property>
              <property name="iconSize">
               <size>
