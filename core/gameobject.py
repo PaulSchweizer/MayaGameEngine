@@ -208,6 +208,6 @@ class Particle(GameObject):
 
     def update(self, delta_time):
         """@todo documentation for update."""
-        # self.particle_shape.setAttr('currentTime', self.particle_shape.getAttr('currentTime') + delta_time * 24)
+        self.particle_shape.setAttr('currentTime', self.particle_shape.getAttr('currentTime') + delta_time * 24)
     # end def update
 # end class Particle
