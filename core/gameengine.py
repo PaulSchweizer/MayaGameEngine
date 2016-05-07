@@ -124,7 +124,6 @@ class GameEngine(object):
 
         if delta_time >= 1.0 / self.target_fps:
             self.update_keys(delta_time)
-
             for game_object in [g for g in self.game_objects if g.enabled]:
                 game_object.update(delta_time)
             # end for
@@ -233,9 +232,8 @@ class GameEngineUI(base_class, form_class):
         super(GameEngineUI, self).__init__(parent=qtutils.get_maya_window())
         self.setupUi(self)
 
-        self.setLayout(QtGui.QHBoxLayout())
         self.start_btn = StartButton(self)
-        self.layout().addWidget(self.start_btn)
+        self.inner_widget_vlay.addWidget(self.start_btn)
 
         self.inner_widget = inner_widget
         if inner_widget is not None:
@@ -299,6 +297,7 @@ class StartButton(QtGui.QPushButton):
         """Initialize the start button."""
         super(StartButton, self).__init__(parent=parent)
         self.setText('START')
+        self.setFocusPolicy(QtCore.Qt.NoFocus)
     # end def __init__
 
     def mouseReleaseEvent(self, event):
@@ -310,8 +309,8 @@ class StartButton(QtGui.QPushButton):
             self.parent().stop()
             return
         # end if
-        self.parent()._on_start()
-        self.parent().on_start()
+        self.parent().parent()._on_start()
+        self.parent().parent().on_start()
         game_engine = GameEngine()
         game_engine.start()
         pm.refresh(f=True)
