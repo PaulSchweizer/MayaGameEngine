@@ -82,11 +82,15 @@ class RaceGameWidget(base_class, form_class):
     def selected_vehicles(self):
         """@todo documentation for selected_vehicles."""
         file_name_a = '%s.ma' % self.vehicle_lst_a.selectedItems()[0].text()
-        file_name_b = '%s.ma' % self.vehicle_lst_a.selectedItems()[0].text()
+        file_name_b = '%s.ma' % self.vehicle_lst_b.selectedItems()[0].text()
         return [os.path.join(os.path.dirname(__file__), 'resource', 'vehicles', file_name_a),
                 os.path.join(os.path.dirname(__file__), 'resource', 'vehicles', file_name_b)]
     # end def selected_vehicles
 
+    def player_names(self):
+        """@todo documentation for player_names."""
+        return [self.player_name_a.text(), self.player_name_b.text()]
+    # end def player_names
 
 # end class RaceGameWidget
 
@@ -111,32 +115,39 @@ class RaceGameUI(gameengine.GameEngineUI):
         # Load and setup the course
         course = self.inner_widget.selected_course()
         vehicles = self.inner_widget.selected_vehicles()
+        player_names = self.inner_widget.player_names()
         pm.newFile(f=True)
         pm.importFile(course)
         # Create boundary Colliders
         gameobject.CurveCollider('L_edge_CRV')
         gameobject.CurveCollider('R_edge_CRV')
-        gameobject.SphereCollider('sphere1')
 
         # Setup the View
         pm.mel.eval('setNamedPanelLayout("Four View")')
 
         # Import and setup the vehicles
-        for v, namespace in zip(vehicles, ['Player1', 'Player2']):
+        i = 0
+        for v, namespace in zip(vehicles, player_names):
             pm.importFile(v, namespace=namespace)
-            panel = cmds.getPanel(withLabel='Top View')
+            panel = cmds.getPanel(withLabel='Persp View')
             if namespace == 'Player2':
-                panel = cmds.getPanel(withLabel='Persp View')
+                panel = cmds.getPanel(withLabel='Top View')
             # end if
             pm.modelPanel(panel, cam='%s:C_playerCamera_CAM' % namespace, e=True)
             self.set_panel_properties('%s:C_playerCamera_CAM' % namespace)
 
             pm.geometryConstraint('C_groundDrive_PLY', '%s:C_main_CTL' % namespace)
             pm.geometryConstraint('C_groundDrive_PLY', '%s:C_front_CTL' % namespace)
-            pm.delete(pm.parentConstraint('StartLocation', '%s:C_main_CTL' % namespace))
-            pm.delete(pm.parentConstraint('StartLocation', '%s:C_front_CTL' % namespace))
+            pm.delete(pm.parentConstraint('StartLocation%s' % i, '%s:C_main_CTL' % namespace))
+            pm.delete(pm.parentConstraint('StartLocation%s' % i, '%s:C_front_CTL' % namespace))
+
+            fire = None
+            if pm.objExists('%s:C_fire_PAR' % namespace):
+                fire = gameobject.Particle('%s:C_fire_PAR' % namespace,
+                                           particle_shape='%s:C_fire_PARShape' % namespace)
 
             v = vehicle.Vehicle(transform='%s:C_main_CTL' % namespace,
+                                name=namespace,
                                 up='Key_Up',
                                 down='Key_Down',
                                 left='Key_Left',
@@ -155,11 +166,9 @@ class RaceGameUI(gameengine.GameEngineUI):
                                         '%s:R_frontWheel_CTL' % namespace,
                                         '%s:L_rearWheel_CTL' % namespace,
                                         '%s:R_rearWheel_CTL' % namespace],
-                                track_curve='C_center_CRVShape',
-                                collider=gameobject.SphereCollider('%s:C_Collider_COL' % namespace),
-                                fire=gameobject.Particle('%s:C_fire_PAR' % namespace,
-                                                         particle_shape='%s:C_fire_PARShape' % namespace))
-            if namespace == 'Player2':
+                                collider=gameobject.SphereCollider('%s:C_Collider_COL' % namespace))
+            # Assign different control set to second Player
+            if i == 1:
                 v.up = 'Key_W'
                 v.down = 'Key_S'
                 v.left = 'Key_A'
@@ -167,6 +176,7 @@ class RaceGameUI(gameengine.GameEngineUI):
             # end if
             game_manager.vehicles.append(v)
             pm.refresh()
+            i += 1
         # end for
     # end def on_start
 
@@ -229,6 +239,9 @@ class GameManager(gameobject.GameObject):
 
     def update(self, delta_time):
         """@todo documentation for update."""
-        pass
+        for v in self.vehicles:
+            if v.damage == 100:
+                print 'END'
+        # end for
     # end def update
 # end class GameManager
