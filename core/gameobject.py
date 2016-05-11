@@ -1,3 +1,10 @@
+"""@package mayaGameEngine.core.gameobject
+@brief GameObject base and colliders
+@date 2016/05/01
+@version 1.0
+@author Paul Schweizer
+@email paulschweizer@gmx.net
+"""
 import pymel.core as pm
 
 from MayaGameEngine.core import gameengine
@@ -74,22 +81,36 @@ class GameObject(object):
     # end def update
 
     def on_collide_enter(self, collider, point, amount):
-        """@todo documentation for on_collide_enter."""
+        """Collider starts colliding with this GameObject.
+
+        @param collider The collider
+        @param point The world space position of the collision
+        @param amount The strength of the collision
+        """
         pass
     # end def on_collide_enter
 
     def on_collide(self, collider, point, amount):
-        """@todo documentation for on_collide."""
+        """Collider collides with this GameObject.
+
+        @param collider The collider
+        @param point The world space position of the collision
+        @param amount The strength of the collision
+        """
         pass
     # end def on_collide
 
     def on_collide_exit(self, collider, point):
-        """@todo documentation for on_collide_exit."""
+        """Collider stops colliding with this GameObject.
+
+        @param collider The collider
+        @param point The world space position of the collision
+        """
         pass
     # end def on_collide_exit
 
     def destroy(self):
-        """Removing this object from the GameEngine."""
+        """Remove this object from the GameEngine."""
         gameengine.GameEngine().game_objects.remove(self)
     # end def destroy()
 # end class GameObject
@@ -97,10 +118,13 @@ class GameObject(object):
 
 class Collider(GameObject):
 
-    """@todo documentation for Collider."""
+    """A collider.
+
+    It gets registered as such in the GameEngine.
+    """
 
     def __init__(self, transform, parent=None):
-        """Initialize Collider."""
+        """Register the Collider in the GameEngine."""
         super(Collider, self).__init__(transform, parent)
         self.game_engine.colliders.append(self)
     # end def __init__
@@ -136,7 +160,11 @@ class SphereCollider(Collider):
     # end def update
 
     def _handle_sphere_collider(self, collider):
-        """@todo documentation for _handle_sphere_collider."""
+        """Handle collisions with other SphereColliders.
+
+        Compare both sphere positions, taking their radius into account.
+        @param collider The other collider
+        """
         r1 = self.transform.getAttr('sx')
         r2 = collider.transform.getAttr('sx')
         d = r1 + r2
@@ -162,6 +190,8 @@ class SphereCollider(Collider):
     def _handle_curve_collider(self, collider):
         """Handle collisions with CurveColliders.
 
+        Sample the closest point on the curve and compare with the
+        sphere position and radius.
         @param collider The CurveCollider
         """
         point = collider.curve.closestPoint(self.transform.getTranslation(ws=True))
@@ -186,7 +216,7 @@ class SphereCollider(Collider):
 
 class CurveCollider(Collider):
 
-    """@todo documentation for CurveCollider."""
+    """Closest point on the curve is used for collision."""
 
     def __init__(self, transform, parent=None):
         """Initialize CurveCollider."""
