@@ -1,3 +1,4 @@
+
 # MayaGameEngine
 
 This is a fun little side project that evolved while working with PySide in Maya.
@@ -13,7 +14,16 @@ The following describes my approach on how to implement a simple Game Engine wit
 
 Please note that the code examples omit a lot of code to not clutter the text, but they relate tot the actual code in the repository.
 
-## Game Engine
+[Game Engine](#game_engine)
+
+[Singleton](#singleton)
+
+[Update Loop](#update_loop)
+
+
+
+
+## <a name="game_engine">Game Engine</a>
 The Engine consists of a Singleton object to make sure every process accesses the same object.
 It calculates the delta time between frame updates, updates the registered game objects and the user input.
 
@@ -48,7 +58,7 @@ if get_gameengine() is None:
     gameengine = GameEngine()
 ```
 
-### Update Loop
+### <a name="game_engine">Update Loop</a>
 
 The update loop in the GameEngine retrieves the delta time and runs the udpate method on all registeres game objects.
 Please note that it only updates within the targete the targeted fps.
@@ -199,16 +209,17 @@ def on_collide_exit(self, collider, point):
 A list of open issues and ideas.
 
 ### Particles 
-The udpate loop can also update the Maya timeline and thus play particles. A test has proven that particles 
+The udpate loop can also update the Maya timeline and thus play particles. A test has proven that particles behave slightly differently than when used regularly in Maya.
 
 ### More Colliders
+A Point/ImplicitSphere Collider would be easy to implement and allow for non uniformly scaled sphere colliders. 
 
 ### Use RigidBodies
+Investigate the use of rigid bodies for when updating the timeline
 
-Point/ImplicitSphere Collider
-ImplicitSphere/ImplicitSphere Collider
+### GameObject representation on it's transform node 
+Have attributes on the transform node represent paramters on the actual GameObject class. Those values could be read on start and allow for an interactive setup of game scenes as opposed to purely code driven.
 
-Transforms hold attributes that represent attributes of the actual GameObject implementation.
 
 
 INSERT LINKS!!!!
