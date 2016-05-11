@@ -4,7 +4,7 @@
 This is a fun little side project that evolved while working with PySide in Maya.
 I wanted to find a solution on how to display a dialog while loading a bunch of assets in the background. The final implementation of that can be found HERE.
 
-LINK to VIDEO
+[LINK to VIDEO]
 
 In the process, I discovered that I could run a while loop in a QWidget’s mouseRelaeseEvent while still being able to receive User Input.
 With this I got two of the basic elements to run a Game: a game loop and user input. On top of that, since running in Maya, vector math, transformation matrices and rendering of 3D geometry is a given.
@@ -12,22 +12,29 @@ The only things missing were game objects that would receive the user input and 
 
 The following describes my approach on how to implement a simple Game Engine with these preconditions. I show examples from a very basic race game that served as a test implementation of the processes. But my main focus was the framework that is the MayaGameEngine.
 
-Please note that the code examples omit a lot of code to not clutter the text, but they relate tot the actual code in the repository.
+Please note that the code examples omit a lot of code tfor simplicity reasons, but they relate to the actual code in the repository.
 
-[Game Engine](#game_engine)
+[1. Game Engine](#game_engine)
 
-[Singleton](#singleton)
+[1.1 Singleton](#singleton)
 
-[Update Loop](#update_loop)
+[1.2 Update Loop](#update_loop)
 
+[2. Game Engine UI](#game_engine_ui)
 
+[3. Input Manager](#input_manager)
 
+[4. Game Objects](#game_objects)
+
+[4.1 Colliders](#colliders)
+
+[5. Further Development](#further_development)
 
 ## <a name="game_engine">Game Engine</a>
 The Engine consists of a Singleton object to make sure every process accesses the same object.
 It calculates the delta time between frame updates, updates the registered game objects and the user input.
 
-### Singleton
+### <a name="singleton">Singleton</a>
 The Singleton is achieved by searching the existing python modules for the game engine module. If the module does not yet possess a certain attribute, the GameEngine class is instantiated and stored in that attribute.
 
 The \__new__ method of the GameEngine class also performs this search and returns the stored instance if it can be found, otherwise it creates a new instance.
@@ -58,10 +65,10 @@ if get_gameengine() is None:
     gameengine = GameEngine()
 ```
 
-### <a name="game_engine">Update Loop</a>
+### <a name="update_loop">Update Loop</a>
 
 The update loop in the GameEngine retrieves the delta time and runs the udpate method on all registeres game objects.
-Please note that it only updates within the targete the targeted fps.
+Please note that it only updates within the targeted fps.
 
 ```python
   def update_main_game_loop(self):
@@ -92,7 +99,7 @@ class StartButton(QtGui.QPushButton):
       return QtGui.QPushButton.mouseReleaseEvent(self, event)
 ```
 
-### Game Engine UI
+## <a name="game_engine_ui">Game Engine UI</a>
 The StartButton resides in a PySide UI, which is necessary to make the solution work in the first place.
 The StartButton starts and also stops the game. 
 
@@ -107,7 +114,7 @@ The UI can be extended by custom widgets depending on the actual game implementa
 self.setFocusPolicy(QtCore.Qt.NoFocus)
 ```
 
-### Input Manager
+## <a name="input_manager">Input Manager</a>
 The InputManager keeps track of the pressed buttons and the elapsed time of the button press.
 It uses a lazy method to only register keys that are pressed or requested byt GameObjects as opposed to initalizing a long list of all keys on initialization.
 
@@ -128,7 +135,7 @@ class InputManager(object):
                            % (self.__class__.__name__, name))
 ```
 
-### Game Objects
+## <a name="game_objects">Game Objects</a>
 A Game Object is represented by a transform node in Maya.
 It can be disabled to not receive any updates from the game loop. 
 On instantiation the GameObject registers itself in the GameEngine.
@@ -188,7 +195,7 @@ Key press events will be registered and can used to trigger actions in the game.
     pass
 ```
 
-### Colliders
+### <a name="colldiers">Colliders</a>
 A special type of GameObjects are colliders.
 Right now, only two colliders are provided, a SphereCollider and a CurveCollider.
 
@@ -205,7 +212,7 @@ def on_collide_exit(self, collider, point):
     pass
 ```
 
-## Further Development
+## <a name="further_development">Further Development</a>
 A list of open issues and ideas.
 
 ### Particles 
@@ -219,11 +226,3 @@ Investigate the use of rigid bodies for when updating the timeline
 
 ### GameObject representation on it's transform node 
 Have attributes on the transform node represent paramters on the actual GameObject class. Those values could be read on start and allow for an interactive setup of game scenes as opposed to purely code driven.
-
-
-
-INSERT LINKS!!!!
-INSERT TOC
-
-
-
