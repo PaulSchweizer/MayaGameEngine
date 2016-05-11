@@ -82,6 +82,42 @@ class StartButton(QtGui.QPushButton):
       return QtGui.QPushButton.mouseReleaseEvent(self, event)
 ```
 
+### Game Engine UI
+The StartButton resides in a PySide UI, which is necessary to make the solution work in the first place.
+The StartButton starts and also stops the game. 
+
+Key press and release events are registered by the UI and distributed to the InputManager.
+For the key events to be processed, the GameEngineUi has to be focused. 
+
+The UI is designed to fill the entire screen and then minimize when the Game has been started.
+
+The UI can be extended by custom widgets depending on the actual game implementation. Please note that it is crucial to set the proper focus policy on all widgets, otherwise key events might just iterate over the widgets in the UI.
+
+```python
+self.setFocusPolicy(QtCore.Qt.NoFocus)
+```
+
+### Input Manager
+The InputManager keeps track of the pressed buttons and the elapsed time of the button press.
+It uses a lazy method to only register keys that are pressed or requested byt GameObjects as opposed to initalizing a long list of all keys on initialization.
+
+```python
+class InputManager(object):
+
+  def __init__(self, game_engine):
+    self.inputs = dict()
+
+  def __getattr__(self, name):
+    try:
+      if getattr(QtCore.Qt, name) in self.inputs.keys():
+        return self.inputs[getattr(QtCore.Qt, name)]
+      else:
+        return [False, 0]
+    except:
+      raise AttributeError('\'%s\' object has no attribute \'%s\''
+                           % (self.__class__.__name__, name))
+```
+
 ### Game Objects
 A Game Object is represented by a transform node in Maya.
 It can be disabled to not receive any updates from the game loop. 
@@ -90,65 +126,58 @@ On instantiation the GameObject registers itself in the GameEngine
 ```python
 class GameObject(object):
 
-    game_engine = None
+  game_engine = None
 
-    def __init__(self, transform, parent=None):
-        self.transform = pm.PyNode(transform)
-        self.enabled = True
-        self.parent = parent
-        gameengine.GameEngine().register_game_object(self)
+  def __init__(self, transform, parent=None):
+    self.transform = pm.PyNode(transform)
+    self.enabled = True
+    self.parent = parent
+    gameengine.GameEngine().register_game_object(self)
 ```
 
-GameObjects hold a bunch of properties for transformation returning pymel objects.
+GameObjects hold a series of properties for transformation that return respective pymel objects.
 
 ```python
-    @property
-    def forward_vector(self):
-        return pm.datatypes.Vector(0, 0, 1).rotateBy(self.rotation)
+  @property
+  def forward_vector(self):
+      return pm.datatypes.Vector(0, 0, 1).rotateBy(self.rotation)
 
-    @property
-    def position(self):
-      return pm.datatypes.Point(self.transform.getTranslation(ws=True))
+  @property
+  def position(self):
+    return pm.datatypes.Point(self.transform.getTranslation(ws=True))
 
-    @property
-    def rotation(self):
-        return self.transform.getRotation() + [0]
+  @property
+  def rotation(self):
+      return self.transform.getRotation() + [0]
 ```
 
-For implementing actual behavior in the Game, GameObjects provide four virtual methods.
+For implementing actual behavior in the Game, GameObjects provide four basic virtual methods.
 The most important of them being update, which is being called on every frame providing the delta time since the last update.
 
 ```python
-    def update(self, delta_time):
-        """Called on every frame update.
-
-        @param delta_time The time since the last update.
-        """
+  def update(self, delta_time):
+    pass
 ```
 
-The start method can be overridden to set initial values. The example shows how the Vehicle initializes the values of the damage meter on start up 
+The start method can be overridden to set initial values. The example shows how the Vehicle initializes the values of the damage meter on start up.
 
 ```python
-    def start(self):
-        self.ui_health.setAttr('sx', self.damage / 100.0)
-        self.transform.setAttr('damage', self.damage / 100.0)
+  def start(self):
+    self.ui_health.setAttr('sx', self.damage / 100.0)
+    self.transform.setAttr('damage', self.damage / 100.0)
 ```
 
+Key press events will be registered and can used to trigger actions in the game. Due to the below explained resctrictions it is not possible to register any mouse events.
 
 ```python
-    def key_press_event(self, event):
-        """Method to implement key press input events.
+  def key_press_event(self, event):
+    pass
 
-        @param event The QtGui event
-        """
-
-    def key_release_event(self, event):
-        """Method to implement key release input events.
-
-        @param event The QtGui event
-        """
+  def key_release_event(self, event):
+    pass
 ```
 
+### Colliders
 
 
 
@@ -157,5 +186,3 @@ The start method can be overridden to set initial values. The example shows how 
 
 
 
-
-### User Input
