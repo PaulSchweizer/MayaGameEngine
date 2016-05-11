@@ -1,4 +1,12 @@
+"""@package MayaGameEngine.racegame.racegame
+@brief GameObject base and colliders
+@date 2016/05/01
+@version 1.0
+@author Paul Schweizer
+@email paulschweizer@gmx.net
+"""
 import os
+from os import path
 import time
 from PySide import QtGui
 
@@ -15,12 +23,13 @@ reload(gameobject)
 reload(vehicle)
 
 
-base_class, form_class = qtutils.load_ui_type(os.path.dirname(__file__) + '/resource/RaceGame.ui')
+base_class, form_class = qtutils.load_ui_type(path.join(path.dirname(__file__),
+                                              'resource', 'RaceGame.ui'))
 
 
 class RaceGameWidget(base_class, form_class):
 
-    """docstring for RaceGameWidget"""
+    """The inner widget for the RaceGame."""
 
     def __init__(self):
         """Initialize the Widget."""
@@ -37,11 +46,11 @@ class RaceGameWidget(base_class, form_class):
     # end def
 
     def _load_courses(self):
-        """@todo documentation for _load_courses."""
-        base = os.path.join(os.path.dirname(__file__), 'resource', 'courses')
+        """Load all available race courses."""
+        base = path.join(path.dirname(__file__), 'resource', 'courses')
         for course in os.listdir(base):
             if course.endswith('.jpg'):
-                image = os.path.join(base, course)
+                image = path.join(base, course)
                 item = QtGui.QListWidgetItem()
                 icon = QtGui.QIcon(QtGui.QPixmap(image))
                 item.setIcon(icon)
@@ -52,18 +61,18 @@ class RaceGameWidget(base_class, form_class):
     # end def _load_courses
 
     def _load_vehicles(self):
-        """@todo documentation for _load_vehicles."""
-        base = os.path.join(os.path.dirname(__file__), 'resource', 'vehicles')
+        """Load all available vehicles."""
+        base = path.join(path.dirname(__file__), 'resource', 'vehicles')
         for course in os.listdir(base):
             if course.endswith('.jpg'):
-                image = os.path.join(base, course)
+                image = path.join(base, course)
                 item = QtGui.QListWidgetItem()
                 icon = QtGui.QIcon(QtGui.QPixmap(image))
                 item.setIcon(icon)
                 item.setText(course[:-4])
                 self.vehicle_lst_a.addItem(item)
 
-                image = os.path.join(base, course)
+                image = path.join(base, course)
                 item = QtGui.QListWidgetItem()
                 icon = QtGui.QIcon(QtGui.QPixmap(image))
                 item.setIcon(icon)
@@ -74,33 +83,32 @@ class RaceGameWidget(base_class, form_class):
     # end def _load_vehicles
 
     def selected_course(self):
-        """@todo documentation for selected_course."""
+        """@return The selected course"""
         file_name = '%s.ma' % self.course_lst.selectedItems()[0].text()
-        return os.path.join(os.path.dirname(__file__), 'resource', 'courses', file_name)
+        return path.join(path.dirname(__file__), 'resource',
+                         'courses', file_name)
     # end def selected_course
 
     def selected_vehicles(self):
-        """@todo documentation for selected_vehicles."""
+        """@return The selected vehicles"""
         file_name_a = '%s.ma' % self.vehicle_lst_a.selectedItems()[0].text()
         file_name_b = '%s.ma' % self.vehicle_lst_b.selectedItems()[0].text()
-        return [os.path.join(os.path.dirname(__file__), 'resource', 'vehicles', file_name_a),
-                os.path.join(os.path.dirname(__file__), 'resource', 'vehicles', file_name_b)]
+        return [path.join(path.dirname(__file__), 'resource',
+                          'vehicles', file_name_a),
+                path.join(path.dirname(__file__), 'resource',
+                          'vehicles', file_name_b)]
     # end def selected_vehicles
 
     def player_names(self):
-        """@todo documentation for player_names."""
+        """@return The player's names"""
         return [self.player_name_a.text(), self.player_name_b.text()]
     # end def player_names
-
 # end class RaceGameWidget
 
 
 class RaceGameUI(gameengine.GameEngineUI):
 
-    """A simple RaceGame for Maya.
-
-    @todo inner_widget
-    """
+    """A simple RaceGame for Maya."""
 
     def __init__(self):
         """Initialize the RaceGameUI"""
@@ -108,7 +116,7 @@ class RaceGameUI(gameengine.GameEngineUI):
     # end def __init__
 
     def on_start(self):
-        """@todo documentation for on_start."""
+        """Setup the Game."""
         # Create the GameManager
         game_manager = GameManager(pm.createNode('transform', n='GameManager'))
 
@@ -136,15 +144,14 @@ class RaceGameUI(gameengine.GameEngineUI):
             pm.modelPanel(panel, cam='%s:C_playerCamera_CAM' % namespace, e=True)
             self.set_panel_properties('%s:C_playerCamera_CAM' % namespace)
 
-            pm.geometryConstraint('C_groundDrive_PLY', '%s:C_main_CTL' % namespace)
-            pm.geometryConstraint('C_groundDrive_PLY', '%s:C_front_CTL' % namespace)
-            pm.delete(pm.parentConstraint('StartLocation%s' % i, '%s:C_main_CTL' % namespace))
-            pm.delete(pm.parentConstraint('StartLocation%s' % i, '%s:C_front_CTL' % namespace))
-
-            fire = None
-            if pm.objExists('%s:C_fire_PAR' % namespace):
-                fire = gameobject.Particle('%s:C_fire_PAR' % namespace,
-                                           particle_shape='%s:C_fire_PARShape' % namespace)
+            pm.geometryConstraint('C_groundDrive_PLY',
+                                  '%s:C_main_CTL' % namespace)
+            pm.geometryConstraint('C_groundDrive_PLY',
+                                  '%s:C_front_CTL' % namespace)
+            pm.delete(pm.parentConstraint('StartLocation%s' % i,
+                                          '%s:C_main_CTL' % namespace))
+            pm.delete(pm.parentConstraint('StartLocation%s' % i,
+                                          '%s:C_front_CTL' % namespace))
 
             v = vehicle.Vehicle(transform='%s:C_main_CTL' % namespace,
                                 name=namespace,
@@ -181,7 +188,10 @@ class RaceGameUI(gameengine.GameEngineUI):
     # end def on_start
 
     def set_panel_properties(self, camera):
-        """@todo documentation for set_panel_properties."""
+        """Set the properties for the display panel of the given camera.
+
+        @param camera The given camera
+        """
         modelPanelList = []
         modelEditorList = pm.lsUI(editors=True)
         for myModelPanel in modelEditorList:
@@ -209,17 +219,16 @@ class RaceGameUI(gameengine.GameEngineUI):
 
 class GameManager(gameobject.GameObject):
 
-    """@todo documentation for GameManager."""
+    """Show the countdown and determine when the game is over."""
 
     def __init__(self, transform):
         """Initialize GameManager."""
         super(GameManager, self).__init__(transform)
         self.vehicles = list()
-        self.started = False
     # end def __init__
 
     def start(self):
-        """@todo documentation for start."""
+        """Show a countdown"""
         for v in self.vehicles:
             v.update(0.001)
         # end for
@@ -238,10 +247,14 @@ class GameManager(gameobject.GameObject):
     # end def start
 
     def update(self, delta_time):
-        """@todo documentation for update."""
+        """Check the damage on the vehicles.
+
+        @todo check if one of the cars has reached the end of the track
+        """
         for v in self.vehicles:
             if v.damage == 100:
                 print 'END'
+            # end if
         # end for
     # end def update
 # end class GameManager
