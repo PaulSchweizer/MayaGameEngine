@@ -1,4 +1,4 @@
-"""@package mayaGameEngine.core.gameobject
+"""@package MayaGameEngine.core.gameobject
 @brief GameObject base and colliders
 @date 2016/05/01
 @version 1.0
