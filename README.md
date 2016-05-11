@@ -2,7 +2,7 @@
 # MayaGameEngine
 
 This is a fun little side project that evolved while working with PySide in Maya.
-I wanted to find a solution on how to display a dialog while loading a bunch of assets in the background. The final implementation of that can be found HERE.
+I wanted to find a solution on how to display a dialog while loading a bunch of assets in the background. The final implementation of that can be found ![here](https://github.com/PaulSchweizer/PySideWidgetCollection/tree/master/loadingdialog).
 
 [LINK to VIDEO]
 
