@@ -121,7 +121,8 @@ class InputManager(object):
 ### Game Objects
 A Game Object is represented by a transform node in Maya.
 It can be disabled to not receive any updates from the game loop. 
-On instantiation the GameObject registers itself in the GameEngine
+On instantiation the GameObject registers itself in the GameEngine.
+GameObjects can be parented to transmit signals from child to parent or vice versa. Colliders are using this to trigger collision events. More on colliders in the respective section below.
 
 ```python
 class GameObject(object):
@@ -178,11 +179,40 @@ Key press events will be registered and can used to trigger actions in the game.
 ```
 
 ### Colliders
+A special type of GameObjects are colliders.
+Right now, only two colliders are provided, a SphereCollider and a CurveCollider.
+
+Colliders check if they collide with any other collider in the scene. If so, they trigger events on their parent GameObject based on whether they enter the collision, exit it or keep on colliding.
+
+```python
+def on_collide_enter(self, collider, point, amount):
+    pass
+
+def on_collide(self, collider, point, amount):
+    pass
+
+def on_collide_exit(self, collider, point):
+    pass
+```
+
+## Further Development
+A list of open issues and ideas.
+
+### Particles 
+The udpate loop can also update the Maya timeline and thus play particles. A test has proven that particles 
+
+### More Colliders
+
+### Use RigidBodies
+
+Point/ImplicitSphere Collider
+ImplicitSphere/ImplicitSphere Collider
+
+Transforms hold attributes that represent attributes of the actual GameObject implementation.
 
 
-
-
-
+INSERT LINKS!!!!
+INSERT TOC
 
 
 
