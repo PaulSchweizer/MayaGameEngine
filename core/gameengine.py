@@ -1,3 +1,10 @@
+"""@package MayaGameEngine.core.gameengine
+@brief GameObject base and colliders
+@date 2016/05/01
+@version 1.0
+@author Paul Schweizer
+@email paulschweizer@gmx.net
+"""
 import sys
 import time
 
@@ -225,10 +232,13 @@ base_class, form_class = qtutils.load_ui_type(os.path.dirname(__file__) + '/reso
 
 class GameEngineUI(base_class, form_class):
 
-    """@todo documentation for GameEngineUI."""
+    """Extensible UI for the game.
+
+    Registers key events and holds the start button.
+    """
 
     def __init__(self, inner_widget=None):
-        """Initialize GameEngineUI."""
+        """Initialize GameEngineUI and maximize it on start."""
         super(GameEngineUI, self).__init__(parent=qtutils.get_maya_window())
         self.setupUi(self)
 
@@ -249,7 +259,7 @@ class GameEngineUI(base_class, form_class):
     # end def __init__
 
     def _on_start(self):
-        """@todo documentation for _on_start."""
+        """Minimize the UI on game start."""
         desktop = QtGui.QApplication.instance().desktop()
         available_geometry = desktop.screenGeometry(QtGui.QCursor().pos())
         self.setGeometry(available_geometry.x(), 0, 100, 100)
