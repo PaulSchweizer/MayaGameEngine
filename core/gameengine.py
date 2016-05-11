@@ -44,7 +44,7 @@ class GameEngine(object):
             self = game_engine
         else:
             ## The targeted frames per second
-            self.target_fps = 120
+            self.target_fps = 200
 
             ## The start time
             self.time = time.time()
@@ -163,7 +163,7 @@ class InputManager(object):
     """Keep track of user inputs."""
 
     def __init__(self, game_engine):
-        """"""
+        """Initialize the input manager."""
         ## Key map, holds information about pressed keys and time of press
         self.inputs = dict()
 
@@ -173,7 +173,7 @@ class InputManager(object):
     # end def __init__
 
     def __getattr__(self, name):
-        """"""
+        """lazy load the key values."""
         try:
             if getattr(QtCore.Qt, name) in self.inputs.keys():
                 return self.inputs[getattr(QtCore.Qt, name)]
@@ -308,6 +308,7 @@ class StartButton(QtGui.QPushButton):
         super(StartButton, self).__init__(parent=parent)
         self.setText('START')
         self.setFocusPolicy(QtCore.Qt.NoFocus)
+        self.setStyleSheet('padding:30px; background-color:#993333;')
     # end def __init__
 
     def mouseReleaseEvent(self, event):
