@@ -330,10 +330,10 @@ def get_gameengine():
     This is to prevent the context from being initialized multiple
     times and ensures the singleton pattern.
     """
-    context_key = 'MayaGameEngine.core.gameengine'
-    if context_key in sys.modules.keys():
-        if hasattr(sys.modules[context_key], 'gameengine'):
-            return getattr(sys.modules[context_key], 'gameengine')
+    key = 'MayaGameEngine.core.gameengine'
+    if key in sys.modules.keys():
+        if hasattr(sys.modules[key], 'gameengine'):
+            return getattr(sys.modules[key], 'gameengine')
         else:
             return None
         # end if
