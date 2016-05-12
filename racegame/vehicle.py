@@ -1,8 +1,13 @@
+"""@package MayaGameEngine.racegame.vehicle
+@brief A vehicle for the race game
+@date 2016/05/01
+@version 1.0
+@author Paul Schweizer
+@email paulschweizer@gmx.net
+"""
 import math
-from collections import OrderedDict
-import pymel.core as pm
 
-from PySide import QtCore
+import pymel.core as pm
 
 from MayaGameEngine.core import gameobject
 reload(gameobject)
@@ -44,7 +49,25 @@ class Vehicle(gameobject.GameObject):
         """Initialize the Vehicle.
 
         @param transform The main transform of the Vehicle
+        @param name The name of the Player
+        @param up The key for the up motion
+        @param down The key for the down motion
+        @param left The key for the left motion
+        @param right The key for the right motion
+        @param front_aim Transform to provide the forward aim
+        @param body The body of the vehicle
+        @param steering_axis The front steering axis
+        @param steering_wheel The steering wheel
+        @param collider The collider
+        @param ui_pointer The speed pointer
+        @param ui_health The health bar
+        @param ui_countdown The countdown objects
         @param wheels An optional list of wheels that rotate
+        @param overall_scale Not implemented
+        @param max_steering_angle The maximum steering angle
+        @param wheel_radius The wheel radius in Maya units
+        @param mass The mass in kg
+        @param windshield_area The windshield in m**2
         """
         super(Vehicle, self).__init__(transform)
 
@@ -106,7 +129,7 @@ class Vehicle(gameobject.GameObject):
     # end def internal_resistance_force
 
     def update_external_resistance_force(self, delta_time):
-        """@todo documentation for update_external_resistance_force."""
+        """Update external forces from colliders."""
         if not self.colliders:
             if self.external_resistance_force < 10 and self.external_resistance_force > -10:
                 self.external_resistance_force = 0
@@ -119,7 +142,10 @@ class Vehicle(gameobject.GameObject):
     # end def update_external_resistance_force
 
     def weight_transfer(self, velocity_diff):
-        """@todo documentation for weight_transfer."""
+        """Transfer weight to simulate acceleration or decceleration.
+
+        @param velocity_diff The difference in velocity
+        """
         value = math.sqrt(abs(velocity_diff)) * 10
         if velocity_diff < 0:
             value = -value
@@ -128,13 +154,13 @@ class Vehicle(gameobject.GameObject):
     # end def weight_transfer
 
     def start(self):
-        """@todo documentation for start."""
+        """Reset the damage bar."""
         self.ui_health.setAttr('sx', self.damage / 100.0)
         self.transform.setAttr('damage', self.damage / 100.0)
     # end def start
 
     def update(self, delta_time):
-        """"""
+        """Calculate forces on the car and determine it's new position."""
         # Deal with user input
         self._user_input(delta_time)
 
@@ -183,7 +209,7 @@ class Vehicle(gameobject.GameObject):
     # end def update
 
     def _user_input(self, delta_time):
-        """@todo documentation for _user_input."""
+        """Track user input and update interal values."""
         # Throttle up / down
         if getattr(self.game_engine.input_manager, self.up)[0]:
             self.throttle_position = (min(self.throttle_position + delta_time * 2, 1))
@@ -215,7 +241,7 @@ class Vehicle(gameobject.GameObject):
     # end def _user_input
 
     def on_collide_enter(self, collider, point, amount):
-        """@todo documentation for on_collide_enter."""
+        """Damage the vehicle when it gets hit."""
         self.transform.setTranslation(point, ws=True)
         self.external_resistance_force -= amount * self.velocity
         if self.velocity > 0.25 and isinstance(collider, gameobject.SphereCollider):
@@ -226,7 +252,7 @@ class Vehicle(gameobject.GameObject):
     # end def on_collide_enter
 
     def on_collide(self, collider, point, amount):
-        """@todo documentation for on_collide."""
+        """Keep the vehicle outside the other collider."""
         self.transform.setTranslation(point, ws=True)
     # end def on_collide
 # end class Vehicle

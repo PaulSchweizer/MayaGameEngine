@@ -1,5 +1,5 @@
 import sys
-sys.path.append('/corp/home/pschweizer/Desktop')
+sys.path.append('')
 
 from MayaGameEngine.racegame import racegame
 reload(racegame)

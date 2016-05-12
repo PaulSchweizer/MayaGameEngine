@@ -1,3 +1,10 @@
+"""@package MayaGameEngine.core.gameengine
+@brief GameObject base and colliders
+@date 2016/05/01
+@version 1.0
+@author Paul Schweizer
+@email paulschweizer@gmx.net
+"""
 import sys
 import time
 
@@ -37,7 +44,7 @@ class GameEngine(object):
             self = game_engine
         else:
             ## The targeted frames per second
-            self.target_fps = 120
+            self.target_fps = 200
 
             ## The start time
             self.time = time.time()
@@ -156,7 +163,7 @@ class InputManager(object):
     """Keep track of user inputs."""
 
     def __init__(self, game_engine):
-        """"""
+        """Initialize the input manager."""
         ## Key map, holds information about pressed keys and time of press
         self.inputs = dict()
 
@@ -166,7 +173,7 @@ class InputManager(object):
     # end def __init__
 
     def __getattr__(self, name):
-        """"""
+        """lazy load the key values."""
         try:
             if getattr(QtCore.Qt, name) in self.inputs.keys():
                 return self.inputs[getattr(QtCore.Qt, name)]
@@ -225,10 +232,13 @@ base_class, form_class = qtutils.load_ui_type(os.path.dirname(__file__) + '/reso
 
 class GameEngineUI(base_class, form_class):
 
-    """@todo documentation for GameEngineUI."""
+    """Extensible UI for the game.
+
+    Registers key events and holds the start button.
+    """
 
     def __init__(self, inner_widget=None):
-        """Initialize GameEngineUI."""
+        """Initialize GameEngineUI and maximize it on start."""
         super(GameEngineUI, self).__init__(parent=qtutils.get_maya_window())
         self.setupUi(self)
 
@@ -249,7 +259,7 @@ class GameEngineUI(base_class, form_class):
     # end def __init__
 
     def _on_start(self):
-        """@todo documentation for _on_start."""
+        """Minimize the UI on game start."""
         desktop = QtGui.QApplication.instance().desktop()
         available_geometry = desktop.screenGeometry(QtGui.QCursor().pos())
         self.setGeometry(available_geometry.x(), 0, 100, 100)
@@ -298,6 +308,7 @@ class StartButton(QtGui.QPushButton):
         super(StartButton, self).__init__(parent=parent)
         self.setText('START')
         self.setFocusPolicy(QtCore.Qt.NoFocus)
+        self.setStyleSheet('padding:30px; background-color:#993333;')
     # end def __init__
 
     def mouseReleaseEvent(self, event):
@@ -330,10 +341,10 @@ def get_gameengine():
     This is to prevent the context from being initialized multiple
     times and ensures the singleton pattern.
     """
-    context_key = 'MayaGameEngine.core.gameengine'
-    if context_key in sys.modules.keys():
-        if hasattr(sys.modules[context_key], 'gameengine'):
-            return getattr(sys.modules[context_key], 'gameengine')
+    key = 'MayaGameEngine.core.gameengine'
+    if key in sys.modules.keys():
+        if hasattr(sys.modules[key], 'gameengine'):
+            return getattr(sys.modules[key], 'gameengine')
         else:
             return None
         # end if

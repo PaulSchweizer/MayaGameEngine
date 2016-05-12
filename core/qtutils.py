@@ -1,10 +1,3 @@
-"""@package rnkRig.core.qt.utils
-@brief Useful qt utility functions
-@date 2014/11/20
-@version 1.0
-@author Paul Schweizer
-@email pschweizer@rainmaker.com
-"""
 from maya import OpenMayaUI
 from PySide import QtCore, QtGui
 
