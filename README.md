@@ -4,7 +4,9 @@
 This is a fun little side project that evolved while working with PySide in Maya.
 I wanted to find a solution on how to display a dialog while loading a bunch of assets in the background. The final implementation of that can be found ![here](https://github.com/PaulSchweizer/PySideWidgetCollection/tree/master/loadingdialog).
 
-[LINK to VIDEO]
+![RaceGame](/racegame.gif)
+
+
 
 In the process, I discovered that I could run a while loop in a QWidget’s mouseRelaeseEvent while still being able to receive User Input.
 With this I got two of the basic elements to run a Game: a game loop and user input. On top of that, since running in Maya, vector math, transformation matrices and rendering of 3D geometry is a given.
