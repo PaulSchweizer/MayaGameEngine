@@ -18,5 +18,11 @@
 			],
 			"path": "."
 		},
+		{
+			"path": "C:\\PROJECTS\\python\\misc-scripts"
+		},
+		{
+			"path": "C:\\PROJECTS\\PySideWidgetCollection"
+		}
 	]
 }
