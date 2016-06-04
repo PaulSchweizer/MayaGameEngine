@@ -105,9 +105,11 @@ class Vehicle(gameobject.GameObject):
         self.air_resistance_constant = (0.5 * COEFFICIENT_OF_FRICTION *
                                         self.windshield_area * AIR_DENSITY)
         self.external_resistance_force = 0
-        self.damage = 50
+        self.damage = 0
 
         self.body_rotation = 0.0
+
+        self.counters = list()
     # end def __init__
 
     @property
@@ -146,9 +148,10 @@ class Vehicle(gameobject.GameObject):
 
         @param velocity_diff The difference in velocity
         """
-        value = math.sqrt(abs(velocity_diff)) * 10
         if velocity_diff < 0:
-            value = -value
+            value = -math.sqrt(abs(velocity_diff)) * 8
+        else:
+            value = math.sqrt(abs(velocity_diff)) * 4
         # end if
         return value
     # end def weight_transfer
@@ -175,7 +178,7 @@ class Vehicle(gameobject.GameObject):
              - 2000)
         acceleration = F / float(self.mass)
         prev_velocicty = self.velocity
-        self.velocity = max(0, min(self.velocity + acceleration * delta_time, 100))
+        self.velocity = max(0, min(self.velocity + acceleration * delta_time, 36))
 
         # Update the rotation
         adj = pm.datatypes.Vector(0, 0, 1) + pm.datatypes.Vector(0, 0, 1).rotateBy(0, math.radians(self.steering_angle), 0, 0)

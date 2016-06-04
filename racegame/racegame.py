@@ -118,7 +118,6 @@ class RaceGameUI(gameengine.GameEngineUI):
     def on_start(self):
         """Setup the Game."""
         # Create the GameManager
-        game_manager = GameManager(pm.createNode('transform', n='GameManager'))
 
         # Load and setup the course
         course = self.inner_widget.selected_course()
@@ -129,6 +128,8 @@ class RaceGameUI(gameengine.GameEngineUI):
         # Create boundary Colliders
         gameobject.CurveCollider('L_edge_CRV')
         gameobject.CurveCollider('R_edge_CRV')
+
+        game_manager = GameManager(pm.createNode('transform', n='GameManager'))
 
         # Setup the View
         pm.mel.eval('setNamedPanelLayout("Four View")')
@@ -225,6 +226,7 @@ class GameManager(gameobject.GameObject):
         """Initialize GameManager."""
         super(GameManager, self).__init__(transform)
         self.vehicles = list()
+        self.counters = [pm.PyNode(c) for c in pm.ls('counter*', type='transform')]
     # end def __init__
 
     def start(self):
@@ -252,6 +254,26 @@ class GameManager(gameobject.GameObject):
         @todo check if one of the cars has reached the end of the track
         """
         for v in self.vehicles:
+            vt = pm.datatypes.Vector(v.position)
+            for c in self.counters:
+                ct = pm.datatypes.Vector(c.getTranslation(ws=True))
+                if pm.datatypes.Vector(vt - ct).length() < 3.2:
+                    if c not in v.counters:
+                        v.counters.append(c)
+                    # end if
+                # end if
+
+            end_distance = pm.datatypes.Vector(vt - pm.datatypes.Vector(self.counters[0].getTranslation(ws=True))).length()
+
+            if len(v.counters) == len(self.counters) and end_distance < 5:
+
+                gameengine.GameEngine().stop()
+                print 'The Winner is: %s' % v.name
+                from rnkRig.core.qt.widget import confirmdialog
+                confirmdialog.ConfirmDialog('The Winner is: %s' % v.name,
+                                            button=['Play Again', 'Exit'],
+                                            cancel_button='Exit')
+
             if v.damage == 100:
                 print 'END'
             # end if

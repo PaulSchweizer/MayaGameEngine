@@ -196,8 +196,8 @@ class SphereCollider(Collider):
         """
         point = collider.curve.closestPoint(self.transform.getTranslation(ws=True))
         collision_vector = pm.datatypes.Vector(point - self.transform.getTranslation(ws=True))
-        point = point - collision_vector.normal() * 2 * self.transform.getAttr('sx')
-        if collision_vector.length() < self.transform.getAttr('sx') * 2:
+        point = point - collision_vector.normal() * 2.05 * self.transform.getAttr('sx')
+        if collision_vector.length() <= self.transform.getAttr('sx') * 2:
             if collider in self.parent.colliders:
                 self.parent.on_collide(collider, point, collision_vector.length())
             else:
